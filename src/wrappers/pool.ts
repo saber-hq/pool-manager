@@ -1,0 +1,120 @@
+import type { TransactionEnvelope } from "@saberhq/solana-contrib";
+import type { Fees } from "@saberhq/stableswap-sdk";
+import { SWAP_PROGRAM_ID } from "@saberhq/stableswap-sdk";
+import { u64 } from "@saberhq/token-utils";
+import type { Keypair, PublicKey } from "@solana/web3.js";
+
+import type { PoolManagerSDK } from "../poolManagerSdk";
+import type { PoolData, PoolsProgram, SwapFees } from "../types";
+
+/**
+ * Wrapper class for Pool. Methods operate on the object's Pool and Swap.
+ */
+export class PoolWrapper {
+  readonly program: PoolsProgram;
+
+  /**
+   * Typically, constructor should not be directly called, and PoolManagerWrapper::load* functions should
+   * be used instead.
+   */
+  constructor(
+    readonly sdk: PoolManagerSDK,
+    readonly key: PublicKey,
+    readonly data: PoolData,
+    readonly admin: PublicKey
+  ) {
+    this.program = sdk.programs.Pools;
+  }
+
+  rampA(targetAmp: u64, stopRampTs: number): TransactionEnvelope {
+    const instruction = this.program.instruction.rampA(
+      targetAmp,
+      new u64(stopRampTs),
+      {
+        accounts: {
+          ...this._getCommonAccounts(),
+        },
+      }
+    );
+
+    return this.sdk.newTx([instruction]);
+  }
+
+  stopRampA(): TransactionEnvelope {
+    const instruction = this.program.instruction.stopRampA({
+      accounts: {
+        ...this._getCommonAccounts(),
+      },
+    });
+
+    return this.sdk.newTx([instruction]);
+  }
+
+  pauseSwap(): TransactionEnvelope {
+    const instruction = this.program.instruction.pauseSwap({
+      accounts: this._getCommonAccounts(),
+    });
+
+    return this.sdk.newTx([instruction]);
+  }
+
+  unpauseSwap(): TransactionEnvelope {
+    const instruction = this.program.instruction.unpauseSwap({
+      accounts: this._getCommonAccounts(),
+    });
+
+    return this.sdk.newTx([instruction]);
+  }
+
+  commitNewAdmin(newAdmin: Keypair): TransactionEnvelope {
+    const instruction = this.program.instruction.commitNewAdmin({
+      accounts: {
+        ...this._getCommonAccounts(),
+        newAdmin: newAdmin.publicKey,
+      },
+    });
+
+    return this.sdk.newTx([instruction]);
+  }
+
+  applyNewAdmin(): TransactionEnvelope {
+    const instruction = this.program.instruction.applyNewAdmin({
+      accounts: {
+        ...this._getCommonAccounts(),
+      },
+    });
+
+    return this.sdk.newTx([instruction]);
+  }
+
+  setNewFees(newFees: Fees): TransactionEnvelope {
+    return this.sdk.newTx([
+      this.program.instruction.setNewFees(encodeFees(newFees), {
+        accounts: this._getCommonAccounts(),
+      }),
+    ]);
+  }
+
+  private _getCommonAccounts() {
+    return {
+      poolManager: this.data.manager,
+      pool: this.key,
+      swap: this.data.swap,
+      swapProgram: SWAP_PROGRAM_ID,
+      admin: this.admin,
+    };
+  }
+}
+
+const encodeFees = (fees: Fees): SwapFees => ({
+  adminTradeFeeNumerator: new u64(fees.adminTrade.numerator.toString()),
+  adminTradeFeeDenominator: new u64(fees.adminTrade.denominator.toString()),
+  adminWithdrawFeeNumerator: new u64(fees.adminWithdraw.numerator.toString()),
+  adminWithdrawFeeDenominator: new u64(
+    fees.adminWithdraw.denominator.toString()
+  ),
+  tradeFeeNumerator: new u64(fees.trade.numerator.toString()),
+  tradeFeeDenominator: new u64(fees.trade.denominator.toString()),
+  withdrawFeeNumerator: new u64(fees.withdraw.numerator.toString()),
+  withdrawFeeDenominator: new u64(fees.withdraw.denominator.toString()),
+});

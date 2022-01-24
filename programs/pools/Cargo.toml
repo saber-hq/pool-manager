@@ -1,0 +1,28 @@
+[package]
+name = "pools"
+version = "0.1.0"
+description = "Manages the Saber pools."
+edition = "2021"
+homepage = "https://saber.so"
+repository = "https://github.com/saber-hq/saber-pool-manager"
+authors = ["Saber Team <team@saber.so>"]
+license = "AGPL-3.0"
+keywords = ["solana", "saber"]
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "pools"
+
+[features]
+no-entrypoint = []
+no-idl = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = ">=0.17"
+anchor-spl = ">=0.17"
+stable-swap-anchor = "^1.6.8"
+stable-swap-client = "^1.6.8"
+spl-associated-token-account = "1.0.3"
+vipers = "^1.5"

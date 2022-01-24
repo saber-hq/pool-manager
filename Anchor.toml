@@ -1,0 +1,29 @@
+anchor_version = "0.20.1"
+solana_version = "1.8.11"
+
+[registry]
+url = "https://anchor.projectserum.com"
+
+[provider]
+cluster = "localnet"
+wallet = "./tests/test-key.json"
+
+[scripts]
+test = "yarn mocha"
+
+# StableSwap
+[[test.genesis]]
+address = "SSwpkEEcbUqx4vtoEByFjSkhKdCT862DNVb52nZg1UZ"
+program = "./artifacts/deploy/stable_swap.so"
+
+[programs.mainnet]
+pools = "SMANK4F5osjfVpKFH5LPzE6HPpbzSPu5iHPBhuor5xU"
+
+[programs.devnet]
+pools = "SMANK4F5osjfVpKFH5LPzE6HPpbzSPu5iHPBhuor5xU"
+
+[programs.testnet]
+pools = "SMANK4F5osjfVpKFH5LPzE6HPpbzSPu5iHPBhuor5xU"
+
+[programs.localnet]
+pools = "SMANK4F5osjfVpKFH5LPzE6HPpbzSPu5iHPBhuor5xU"
