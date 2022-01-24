@@ -232,9 +232,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@saber-hq/saber-pool-manager@workspace:.":
+"@saber-hq/pool-manager@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@saber-hq/saber-pool-manager@workspace:."
+  resolution: "@saber-hq/pool-manager@workspace:."
   dependencies:
     "@project-serum/anchor": ^0.20.1
     "@rushstack/eslint-patch": ^1.1.0
