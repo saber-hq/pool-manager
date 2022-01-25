@@ -1,5 +1,5 @@
 {
-  "name": "@saber-hq/pool-manager",
+  "name": "@saberhq/pool-manager",
   "version": "0.1.7",
   "description": "Admin proxy for Saber pools.",
   "main": "dist/cjs/index.js",
@@ -9,12 +9,12 @@
     "blockchain"
   ],
   "bugs": {
-    "url": "https://github.com/saber-hq/saber-pool-manager/issues",
+    "url": "https://github.com/saber-hq/pool-manager/issues",
     "email": "ian@ship.capital"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/saber-hq/saber-pool-manager.git"
+    "url": "git+https://github.com/saber-hq/pool-manager.git"
   },
   "author": "Saber Team <team@saber.so>",
   "homepage": "https://saber.so",
