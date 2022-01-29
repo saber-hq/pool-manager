@@ -99,6 +99,30 @@ export class PoolWrapper {
     ]);
   }
 
+  setBeneficiary(newBeneficiary: PublicKey): TransactionEnvelope {
+    return this.sdk.newTx([
+      this.program.instruction.setBeneficiary({
+        accounts: {
+          poolManager: this.data.manager,
+          admin: this.admin,
+          beneficiary: newBeneficiary,
+        },
+      }),
+    ]);
+  }
+
+  setOperator(newOperator: PublicKey): TransactionEnvelope {
+    return this.sdk.newTx([
+      this.program.instruction.setOperator({
+        accounts: {
+          poolManager: this.data.manager,
+          admin: this.admin,
+          operator: newOperator,
+        },
+      }),
+    ]);
+  }
+
   async sendFeesToBeneficiary(): Promise<TransactionEnvelope> {
     const poolManagerData =
       await this.sdk.programs.Pools.account.poolManager.fetch(
