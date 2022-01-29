@@ -1,8 +1,12 @@
 import type { TransactionEnvelope } from "@saberhq/solana-contrib";
-import type { Fees } from "@saberhq/stableswap-sdk";
+import type { Fees, StableSwapState } from "@saberhq/stableswap-sdk";
 import { SWAP_PROGRAM_ID } from "@saberhq/stableswap-sdk";
-import { u64 } from "@saberhq/token-utils";
-import type { Keypair, PublicKey } from "@solana/web3.js";
+import { getOrCreateATAs, TOKEN_PROGRAM_ID, u64 } from "@saberhq/token-utils";
+import type {
+  Keypair,
+  PublicKey,
+  TransactionInstruction,
+} from "@solana/web3.js";
 
 import type { PoolManagerSDK } from "../poolManagerSdk";
 import type { PoolData, PoolsProgram, SwapFees } from "../types";
@@ -93,6 +97,76 @@ export class PoolWrapper {
         accounts: this._getCommonAccounts(),
       }),
     ]);
+  }
+
+  setBeneficiary(newBeneficiary: PublicKey): TransactionEnvelope {
+    return this.sdk.newTx([
+      this.program.instruction.setBeneficiary({
+        accounts: {
+          poolManager: this.data.manager,
+          admin: this.admin,
+          beneficiary: newBeneficiary,
+        },
+      }),
+    ]);
+  }
+
+  setOperator(newOperator: PublicKey): TransactionEnvelope {
+    return this.sdk.newTx([
+      this.program.instruction.setOperator({
+        accounts: {
+          poolManager: this.data.manager,
+          admin: this.admin,
+          operator: newOperator,
+        },
+      }),
+    ]);
+  }
+
+  async sendFeesToBeneficiary(
+    swapState: StableSwapState
+  ): Promise<TransactionEnvelope> {
+    const poolManagerData =
+      await this.sdk.programs.Pools.account.poolManager.fetch(
+        this.data.manager
+      );
+
+    const allInstructions: TransactionInstruction[] = [];
+    const { accounts, instructions } = await getOrCreateATAs({
+      provider: this.sdk.provider,
+      mints: {
+        mintA: this.data.mintA,
+        mintB: this.data.mintB,
+      },
+      owner: poolManagerData.beneficiary,
+    });
+    if (instructions) {
+      allInstructions.push(...instructions);
+    }
+    allInstructions.push(
+      this.program.instruction.sendFeesToBeneficiary({
+        accounts: {
+          poolManager: this.data.manager,
+          pool: this.key,
+          feeAccount: swapState.tokenA.adminFeeAccount,
+          beneficiaryAccount: accounts.mintA,
+          tokenProgram: TOKEN_PROGRAM_ID,
+        },
+      })
+    );
+    allInstructions.push(
+      this.program.instruction.sendFeesToBeneficiary({
+        accounts: {
+          poolManager: this.data.manager,
+          pool: this.key,
+          feeAccount: swapState.tokenB.adminFeeAccount,
+          beneficiaryAccount: accounts.mintB,
+          tokenProgram: TOKEN_PROGRAM_ID,
+        },
+      })
+    );
+
+    return this.sdk.newTx(allInstructions);
   }
 
   private _getCommonAccounts() {

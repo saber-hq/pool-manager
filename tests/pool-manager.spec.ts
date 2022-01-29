@@ -1,6 +1,7 @@
 /// <reference types="mocha" />
 
 import { assertTXSuccess, expectTX } from "@saberhq/chai-solana";
+import { TransactionEnvelope } from "@saberhq/solana-contrib";
 import {
   decodeSwap,
   DEFAULT_TOKEN_DECIMALS,
@@ -9,7 +10,12 @@ import {
   StableSwap,
   SWAP_PROGRAM_ID,
 } from "@saberhq/stableswap-sdk";
-import { u64 } from "@saberhq/token-utils";
+import {
+  createMintToInstruction,
+  getATAAddresses,
+  getTokenAccount,
+  u64,
+} from "@saberhq/token-utils";
 import { Keypair, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import { expect } from "chai";
 import invariant from "tiny-invariant";
@@ -224,5 +230,50 @@ describe("Saber Pool Manager", () => {
     expect(newFees.withdraw.denominator.toString()).to.equal(
       RECOMMENDED_FEES.withdraw.denominator.toString()
     );
+  });
+
+  it("Send fees to beneficiary", async () => {
+    const stableSwap = await StableSwap.load(
+      provider.connection,
+      swapAccount,
+      SWAP_PROGRAM_ID
+    );
+
+    const expectedAmount = new u64(1_000_000_000);
+    const mintToTx = TransactionEnvelope.combineAll(
+      ...[stableSwap.state.tokenA, stableSwap.state.tokenB].map((token) =>
+        createMintToInstruction({
+          provider,
+          mint: token.mint,
+          mintAuthorityKP: minter,
+          to: token.adminFeeAccount,
+          amount: expectedAmount,
+        })
+      )
+    );
+    await expectTX(mintToTx, "mint to swap fee accounts").to.be.fulfilled;
+
+    const poolWrapper = await pmWrapper
+      .withSigner(admin)
+      .loadPoolWrapperFromMints(mintA, mintB);
+    await assertTXSuccess(
+      await poolWrapper.sendFeesToBeneficiary(stableSwap.state),
+      "send fees to beneficiary"
+    );
+
+    const beneficiary = pmWrapper.data?.beneficiary;
+    invariant(beneficiary, "pool manager beneficiary must exist");
+    const { accounts } = await getATAAddresses({
+      mints: {
+        mintA,
+        mintB,
+      },
+      owner: beneficiary,
+    });
+
+    const accountA = await getTokenAccount(provider, accounts.mintA.address);
+    expect(accountA.amount).to.bignumber.eq(expectedAmount);
+    const accountB = await getTokenAccount(provider, accounts.mintB.address);
+    expect(accountB.amount).to.bignumber.eq(expectedAmount);
   });
 });
