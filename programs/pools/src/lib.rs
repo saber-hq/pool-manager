@@ -257,7 +257,6 @@ pub struct ImportPoolPermissionless<'info> {
     pub pool_manager: Box<Account<'info, PoolManager>>,
 
     /// [SwapInfo] to import.
-    #[account(mut)]
     pub swap: Box<Account<'info, SwapInfo>>,
 
     /// [Pool].
