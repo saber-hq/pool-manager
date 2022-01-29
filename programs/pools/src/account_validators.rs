@@ -7,7 +7,7 @@ use crate::{
 use anchor_lang::prelude::*;
 use anchor_spl::token::TokenAccount;
 use stable_swap_client::state::SwapTokenInfo;
-use vipers::{assert_keys_eq, invariant, Validate};
+use vipers::prelude::*;
 
 impl<'info> Validate<'info> for ImportPoolPermissionless<'info> {
     fn validate(&self) -> ProgramResult {

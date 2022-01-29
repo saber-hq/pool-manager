@@ -1,4 +1,17 @@
-//! Registry to help the frontend quickly locate all active pools.
+//! Manages Saber liquidity pools.
+//!
+//! # Description
+//!
+//! The Saber [pools] program allows the DAO to collect fees across all Saber pools
+//! and allows anyone to create new StableSwap pools indexed by Saber without permission.
+//!
+//! # Addresses
+//!
+//! - **Pools:** [SMANK4F5osjfVpKFH5LPzE6HPpbzSPu5iHPBhuor5xU](https://anchor.so/programs/SMANK4F5osjfVpKFH5LPzE6HPpbzSPu5iHPBhuor5xU)
+//!
+//! # License
+//!
+//! The Saber Pools program is licensed under the Affero General Public License, version 3.
 #![deny(rustdoc::all)]
 #![allow(rustdoc::missing_doc_code_examples)]
 #![deny(clippy::unwrap_used)]
@@ -70,7 +83,7 @@ pub mod pools {
         import_pool::import_pool_unchecked(ctx.accounts, bump, true)
     }
 
-    /// Imports a pool as the pool's operator.
+    /// Imports a pool as the [PoolManager]'s operator.
     #[access_control(ctx.accounts.validate())]
     pub fn import_pool_as_operator(ctx: Context<ImportPoolAsOperator>, bump: u8) -> ProgramResult {
         import_pool::import_pool_unchecked(&mut ctx.accounts.import_pool, bump, false)

@@ -1,3 +1,5 @@
+//! Accounts state.
+
 use anchor_lang::prelude::*;
 
 /// Manages all [Pool]s.
