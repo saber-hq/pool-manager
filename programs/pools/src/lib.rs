@@ -215,7 +215,7 @@ pub mod pools {
         Ok(())
     }
 
-    /// Sets the [PoolManager::operator].
+    /// Sets the [PoolManager::beneficiary].
     #[access_control(ctx.accounts.validate())]
     pub fn set_beneficiary(ctx: Context<SetBeneficiary>) -> ProgramResult {
         let pool_manager = &mut ctx.accounts.pool_manager;
