@@ -1,5 +1,5 @@
 import type { TransactionEnvelope } from "@saberhq/solana-contrib";
-import type { Fees } from "@saberhq/stableswap-sdk";
+import type { Fees, StableSwapState } from "@saberhq/stableswap-sdk";
 import { SWAP_PROGRAM_ID } from "@saberhq/stableswap-sdk";
 import { getOrCreateATAs, TOKEN_PROGRAM_ID, u64 } from "@saberhq/token-utils";
 import type {
@@ -123,7 +123,9 @@ export class PoolWrapper {
     ]);
   }
 
-  async sendFeesToBeneficiary(): Promise<TransactionEnvelope> {
+  async sendFeesToBeneficiary(
+    swapState: StableSwapState
+  ): Promise<TransactionEnvelope> {
     const poolManagerData =
       await this.sdk.programs.Pools.account.poolManager.fetch(
         this.data.manager
@@ -146,8 +148,8 @@ export class PoolWrapper {
         accounts: {
           poolManager: this.data.manager,
           pool: this.key,
-          feeAccount: accounts.mintA,
-          beneficiaryAccount: poolManagerData.beneficiary,
+          feeAccount: swapState.tokenA.adminFeeAccount,
+          beneficiaryAccount: accounts.mintA,
           tokenProgram: TOKEN_PROGRAM_ID,
         },
       })
@@ -157,8 +159,8 @@ export class PoolWrapper {
         accounts: {
           poolManager: this.data.manager,
           pool: this.key,
-          feeAccount: accounts.mintB,
-          beneficiaryAccount: poolManagerData.beneficiary,
+          feeAccount: swapState.tokenB.adminFeeAccount,
+          beneficiaryAccount: accounts.mintB,
           tokenProgram: TOKEN_PROGRAM_ID,
         },
       })
