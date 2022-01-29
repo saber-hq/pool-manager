@@ -1,6 +1,6 @@
 [package]
 name = "pools"
-version = "0.1.7"
+version = "0.1.9"
 description = "Manages the Saber pools."
 edition = "2021"
 homepage = "https://saber.so"
