@@ -278,8 +278,8 @@ pub struct ImportPoolPermissionless<'info> {
         seeds = [
             b"SaberPool".as_ref(),
             pool_manager.key().to_bytes().as_ref(),
-            swap.token_a.mint.to_bytes().as_ref(),
-            swap.token_b.mint.to_bytes().as_ref()
+            swap.sorted_mints().0.to_bytes().as_ref(),
+            swap.sorted_mints().1.to_bytes().as_ref()
         ],
         bump = bump,
         payer = payer

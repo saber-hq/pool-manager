@@ -18,7 +18,6 @@ import type { PublicKey } from "@solana/web3.js";
 import { Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { expect } from "chai";
 
-import { comparePubkeys } from "../src";
 import type { PoolManagerWrapper } from "../src/wrappers/poolManager";
 import { makePoolManagerSDK } from "./testutils";
 
@@ -49,24 +48,16 @@ describe("Saber Pool Manager with existing swap", () => {
   });
 
   beforeEach(async () => {
-    const mint1 = await createMint(
+    mintA = await createMint(
       provider,
       minter.publicKey,
       DEFAULT_TOKEN_DECIMALS
     );
-    const mint2 = await createMint(
+    mintB = await createMint(
       provider,
       minter.publicKey,
       DEFAULT_TOKEN_DECIMALS
     );
-
-    if (comparePubkeys(mint1, mint2) === -1) {
-      mintA = mint1;
-      mintB = mint2;
-    } else {
-      mintA = mint2;
-      mintB = mint1;
-    }
 
     const initialAdmin = minter.publicKey;
 

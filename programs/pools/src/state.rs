@@ -1,6 +1,7 @@
 //! Accounts state.
 
 use anchor_lang::prelude::*;
+use stable_swap_anchor::SwapInfo;
 
 /// Manages all [Pool]s.
 #[account]
@@ -62,6 +63,32 @@ pub struct Pool {
     pub token_decimals: u8,
     /// Flag indicating if the pool was imported with [crate::pools::import_pool_permissionless].
     pub permissionless_import: bool,
+}
+
+/// Gets the sorted mints of the [Pool].
+/// This is used to derive the PDA.
+pub trait SortedMints {
+    fn sorted_mints(&self) -> (&Pubkey, &Pubkey);
+}
+
+impl SortedMints for SwapInfo {
+    fn sorted_mints(&self) -> (&Pubkey, &Pubkey) {
+        if self.token_a.mint < self.token_b.mint {
+            (&self.token_a.mint, &self.token_b.mint)
+        } else {
+            (&self.token_b.mint, &self.token_a.mint)
+        }
+    }
+}
+
+impl SortedMints for Pool {
+    fn sorted_mints(&self) -> (&Pubkey, &Pubkey) {
+        if self.mint_a < self.mint_b {
+            (&self.mint_a, &self.mint_b)
+        } else {
+            (&self.mint_b, &self.mint_a)
+        }
+    }
 }
 
 // Redefinitions.

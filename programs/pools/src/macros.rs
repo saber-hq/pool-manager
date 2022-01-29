@@ -7,8 +7,8 @@ macro_rules! gen_pool_signer_seeds {
         &[&[
             b"SaberPool".as_ref(),
             &$pool.manager.to_bytes(),
-            &$pool.mint_a.to_bytes(),
-            &$pool.mint_b.to_bytes(),
+            &$pool.sorted_mints().0.to_bytes(),
+            &$pool.sorted_mints().1.to_bytes(),
             &[$pool.bump],
         ]]
     };
