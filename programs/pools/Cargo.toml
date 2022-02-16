@@ -20,8 +20,8 @@ cpi = ["no-entrypoint"]
 default = []
 
 [dependencies]
-anchor-lang = ">=0.17"
-anchor-spl = ">=0.17"
+anchor-lang = ">=0.21"
+anchor-spl = ">=0.21"
 stable-swap-anchor = "^1.6.8"
 stable-swap-client = "^1.6.9"
-vipers = "^1.5"
+vipers = "^1.6"

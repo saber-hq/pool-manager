@@ -16,8 +16,8 @@ pub fn import_pool_unchecked(
 
     let pool = &mut accounts.pool;
     pool.manager = accounts.pool_manager.key();
-    pool.mint_a = accounts.swap.token_a.mint.key();
-    pool.mint_b = accounts.swap.token_b.mint.key();
+    pool.mint_a = accounts.swap.token_a.mint;
+    pool.mint_b = accounts.swap.token_b.mint;
     pool.bump = bump;
 
     pool.swap = accounts.swap.key();

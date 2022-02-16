@@ -35,11 +35,8 @@ impl<'info> ImportPoolPermissionless<'info> {
 
         let token_a_mint = swap.token_a.mint;
         let token_b_mint = swap.token_b.mint;
-        require!(
-            token_a_mint.key() != token_b_mint.key(),
-            SwapTokensCannotBeEqual
-        );
-        require!(token_a_mint.key() < token_b_mint.key(), SwapTokensNotSorted);
+        assert_keys_neq!(token_a_mint, token_b_mint, SwapTokensCannotBeEqual);
+        require!(token_a_mint < token_b_mint, SwapTokensNotSorted);
 
         Ok(())
     }
@@ -53,7 +50,7 @@ impl<'info> ImportPoolPermissionless<'info> {
         assert_keys_eq!(fees.mint, swap_token_info.mint);
         invariant!(fees.delegate.is_none());
         invariant!(fees.close_authority.is_none());
-        assert_keys_eq!(fees, swap_token_info.admin_fees);
+        assert_keys_eq!(*fees, swap_token_info.admin_fees);
         Ok(())
     }
 }
