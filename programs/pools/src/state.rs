@@ -141,3 +141,12 @@ impl From<SwapFees> for stable_swap_client::fees::Fees {
         }
     }
 }
+
+#[account(zero_copy)]
+#[derive(Default, Debug)]
+pub struct PoolGauge {
+    /// Timestamp of when the [gauge::Gauge] was enabled.
+    /// If a gauge is enabled then later disabled, the [PoolManager::admin] must be the one to re-enable it.
+    /// Gauges may be created for any pool by anyone.
+    pub gauge_enabled_at: u64,
+}

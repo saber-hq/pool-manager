@@ -16,10 +16,12 @@
 #![allow(rustdoc::missing_doc_code_examples)]
 #![deny(clippy::unwrap_used)]
 
+mod instructions;
 mod macros;
 
 use anchor_lang::prelude::*;
 use anchor_spl::token::{Mint, Token, TokenAccount};
+use instructions::*;
 use stable_swap_anchor::{StableSwap, SwapInfo};
 use vipers::prelude::*;
 
@@ -77,10 +79,10 @@ pub mod pools {
     #[access_control(ctx.accounts.validate())]
     pub fn import_pool_permissionless(
         ctx: Context<ImportPoolPermissionless>,
-        bump: u8,
+        _bump: u8,
     ) -> ProgramResult {
         ctx.accounts.validate_initial_parameters()?;
-        import_pool::import_pool_unchecked(ctx.accounts, bump, true)
+        import_pool::import_pool_unchecked(ctx.accounts, *unwrap_int!(ctx.bumps.get("pool")), true)
     }
 
     /// Imports a pool as the [PoolManager]'s operator.
@@ -222,6 +224,22 @@ pub mod pools {
         pool_manager.beneficiary = ctx.accounts.beneficiary.key();
 
         Ok(())
+    }
+
+    /// Creates a [quarry_mine::Quarry] for the pool. Permissionless.
+    ///
+    /// This requires the [PoolManager] to be the [quarry_operator::Operator::quarry_creator].
+    #[access_control(ctx.accounts.validate())]
+    pub fn create_quarry(ctx: Context<CreateQuarry>, bump: u8) -> ProgramResult {
+        instructions::create_quarry::handler(ctx, bump)
+    }
+
+    /// Enables a [gauge::Gauge] for the pool. Permissionless.
+    ///
+    /// This requires the [PoolManager] to be the [gauge::Gaugemeister::foreman].
+    #[access_control(ctx.accounts.validate())]
+    pub fn enable_gauge(ctx: Context<EnableGauge>) -> ProgramResult {
+        instructions::enable_gauge::handler(ctx)
     }
 }
 

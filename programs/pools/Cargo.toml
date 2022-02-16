@@ -24,4 +24,7 @@ anchor-lang = ">=0.21"
 anchor-spl = ">=0.21"
 stable-swap-anchor = "^1.6.8"
 stable-swap-client = "^1.6.9"
+quarry-mine = { version = "2.0.1", features = ["cpi"] }
+quarry-operator = { version = "2.0.1", features = ["cpi"] }
+gauge = { version = "0.2.1", features = ["cpi"] }
 vipers = "^1.6"
