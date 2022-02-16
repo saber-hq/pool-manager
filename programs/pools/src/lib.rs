@@ -77,15 +77,17 @@ pub mod pools {
     #[access_control(ctx.accounts.validate())]
     pub fn import_pool_permissionless(
         ctx: Context<ImportPoolPermissionless>,
-        bump: u8,
+        _bump: u8,
     ) -> ProgramResult {
         ctx.accounts.validate_initial_parameters()?;
+        let bump = *unwrap_int!(ctx.bumps.get("pool"));
         import_pool::import_pool_unchecked(ctx.accounts, bump, true)
     }
 
     /// Imports a pool as the [PoolManager]'s operator.
     #[access_control(ctx.accounts.validate())]
-    pub fn import_pool_as_operator(ctx: Context<ImportPoolAsOperator>, bump: u8) -> ProgramResult {
+    pub fn import_pool_as_operator(ctx: Context<ImportPoolAsOperator>, _bump: u8) -> ProgramResult {
+        let bump = *unwrap_int!(ctx.bumps.get("pool"));
         import_pool::import_pool_unchecked(&mut ctx.accounts.import_pool, bump, false)
     }
 
