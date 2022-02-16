@@ -1,3 +1,3 @@
 # `pools`
 
-Manages pools and allows users to create their own pools.
+Manages Saber pools and allows users to create their own pools.

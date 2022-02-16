@@ -21,7 +21,7 @@ mod macros;
 use anchor_lang::prelude::*;
 use anchor_spl::token::{Mint, Token, TokenAccount};
 use stable_swap_anchor::{StableSwap, SwapInfo};
-use vipers::Validate;
+use vipers::prelude::*;
 
 mod account_validators;
 mod cpi_helpers;
@@ -40,10 +40,10 @@ pub mod pools {
     use super::*;
 
     /// Creates a new [PoolManager].
-    pub fn new_pool_manager(ctx: Context<NewPoolManager>, bump: u8) -> ProgramResult {
+    pub fn new_pool_manager(ctx: Context<NewPoolManager>, _bump: u8) -> ProgramResult {
         let pool_manager = &mut ctx.accounts.pool_manager;
         pool_manager.base = ctx.accounts.base.key();
-        pool_manager.bump = bump;
+        pool_manager.bump = *unwrap_int!(ctx.bumps.get("pool_manager"));
         pool_manager.num_pools = 0;
 
         pool_manager.admin = ctx.accounts.admin.key();
@@ -227,7 +227,6 @@ pub mod pools {
 
 /// Accounts for [pools::new_pool_manager].
 #[derive(Accounts)]
-#[instruction(bump: u8)]
 pub struct NewPoolManager<'info> {
     /// The [PoolManager].
     #[account(
@@ -236,7 +235,7 @@ pub struct NewPoolManager<'info> {
             b"SaberPoolManager".as_ref(),
             base.key().to_bytes().as_ref()
         ],
-        bump = bump,
+        bump,
         payer = payer
     )]
     pub pool_manager: Account<'info, PoolManager>,
@@ -281,7 +280,7 @@ pub struct ImportPoolPermissionless<'info> {
             swap.sorted_mints().0.to_bytes().as_ref(),
             swap.sorted_mints().1.to_bytes().as_ref()
         ],
-        bump = bump,
+        bump,
         payer = payer
     )]
     pub pool: Box<Account<'info, Pool>>,
