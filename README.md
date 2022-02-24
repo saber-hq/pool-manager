@@ -6,10 +6,11 @@ Allows the DAO to manage Saber pools and for anyone to create new pools without 
 
 ### Running tests
 
-1. Install deps via `yarn`
-1. Run some scripts, `./scripts/idl.sh`, `./scripts-generate-idl-types.sh`, and `./scripts/pull-saber.sh`
-1. `anchor build`
-1. Now `yarn test` should work
+1. Install deps via `yarn` (yarn version should be >= 3.2.0)
+2. brew install gnu-sed
+3. Run some scripts, `./scripts/idl.sh`, `./scripts/generate-idl-types.sh`, and `./scripts/pull-saber.sh`
+4. `anchor build`
+5. Now `yarn test` should work
 
 ### VS Code setup
 
