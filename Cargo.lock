@@ -1197,9 +1197,9 @@ dependencies = [
 
 [[package]]
 name = "stable-swap-client"
-version = "1.6.9"
+version = "1.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5be774a0fd206f51fb81319967525869f252b45ca87eff4fda11140212735768"
+checksum = "e03e808edaf68a683d64b6582d3b184065768f0bd9dcb2338ee8d5f3e3e1e4d2"
 dependencies = [
  "arrayref",
  "num-derive",
