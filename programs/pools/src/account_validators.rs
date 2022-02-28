@@ -10,7 +10,7 @@ use stable_swap_client::state::SwapTokenInfo;
 use vipers::prelude::*;
 
 impl<'info> Validate<'info> for ImportPoolPermissionless<'info> {
-    fn validate(&self) -> ProgramResult {
+    fn validate(&self) -> Result<()> {
         assert_keys_eq!(self.swap.admin_key, self.pool);
         assert_keys_eq!(self.swap.pool_mint, self.lp_mint);
 
@@ -23,7 +23,7 @@ impl<'info> Validate<'info> for ImportPoolPermissionless<'info> {
 }
 
 impl<'info> ImportPoolPermissionless<'info> {
-    pub fn validate_initial_parameters(&self) -> ProgramResult {
+    pub fn validate_initial_parameters(&self) -> Result<()> {
         let swap = &self.swap;
         let pm = &self.pool_manager;
         invariant!(
@@ -45,7 +45,7 @@ impl<'info> ImportPoolPermissionless<'info> {
         &self,
         fees: &Account<TokenAccount>,
         swap_token_info: &SwapTokenInfo,
-    ) -> ProgramResult {
+    ) -> Result<()> {
         assert_keys_eq!(fees.owner, self.pool);
         assert_keys_eq!(fees.mint, swap_token_info.mint);
         invariant!(fees.delegate.is_none());
@@ -56,7 +56,7 @@ impl<'info> ImportPoolPermissionless<'info> {
 }
 
 impl<'info> Validate<'info> for ImportPoolAsOperator<'info> {
-    fn validate(&self) -> ProgramResult {
+    fn validate(&self) -> Result<()> {
         invariant!(
             self.admin_or_operator.key() == self.import_pool.pool_manager.admin
                 || self.admin_or_operator.key() == self.import_pool.pool_manager.operator,
@@ -67,7 +67,7 @@ impl<'info> Validate<'info> for ImportPoolAsOperator<'info> {
 }
 
 impl<'info> Validate<'info> for SwapContext<'info> {
-    fn validate(&self) -> ProgramResult {
+    fn validate(&self) -> Result<()> {
         assert_keys_eq!(self.pool_manager.admin, self.admin, NotAdmin);
         assert_keys_eq!(self.pool_manager, self.pool.manager);
 
@@ -77,7 +77,7 @@ impl<'info> Validate<'info> for SwapContext<'info> {
 }
 
 impl<'info> Validate<'info> for CommitNewAdmin<'info> {
-    fn validate(&self) -> ProgramResult {
+    fn validate(&self) -> Result<()> {
         assert_keys_eq!(self.pool_manager.admin, self.admin, NotAdmin);
         assert_keys_eq!(self.pool_manager, self.pool.manager);
 
@@ -87,7 +87,7 @@ impl<'info> Validate<'info> for CommitNewAdmin<'info> {
 }
 
 impl<'info> Validate<'info> for SendFeesToBeneficiary<'info> {
-    fn validate(&self) -> ProgramResult {
+    fn validate(&self) -> Result<()> {
         assert_keys_eq!(self.pool_manager, self.pool.manager);
         assert_keys_eq!(
             self.beneficiary_account.owner,
@@ -104,14 +104,14 @@ impl<'info> Validate<'info> for SendFeesToBeneficiary<'info> {
 }
 
 impl<'info> Validate<'info> for SetOperator<'info> {
-    fn validate(&self) -> ProgramResult {
+    fn validate(&self) -> Result<()> {
         assert_keys_eq!(self.pool_manager.admin, self.admin, NotAdmin);
         Ok(())
     }
 }
 
 impl<'info> Validate<'info> for SetBeneficiary<'info> {
-    fn validate(&self) -> ProgramResult {
+    fn validate(&self) -> Result<()> {
         assert_keys_eq!(self.pool_manager.admin, self.admin, NotAdmin);
         Ok(())
     }

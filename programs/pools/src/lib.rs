@@ -40,7 +40,7 @@ pub mod pools {
     use super::*;
 
     /// Creates a new [PoolManager].
-    pub fn new_pool_manager(ctx: Context<NewPoolManager>, _bump: u8) -> ProgramResult {
+    pub fn new_pool_manager(ctx: Context<NewPoolManager>, _bump: u8) -> Result<()> {
         let pool_manager = &mut ctx.accounts.pool_manager;
         pool_manager.base = ctx.accounts.base.key();
         pool_manager.bump = *unwrap_int!(ctx.bumps.get("pool_manager"));
@@ -78,7 +78,7 @@ pub mod pools {
     pub fn import_pool_permissionless(
         ctx: Context<ImportPoolPermissionless>,
         _bump: u8,
-    ) -> ProgramResult {
+    ) -> Result<()> {
         ctx.accounts.validate_initial_parameters()?;
         let bump = *unwrap_int!(ctx.bumps.get("pool"));
         import_pool::import_pool_unchecked(ctx.accounts, bump, true)
@@ -86,14 +86,14 @@ pub mod pools {
 
     /// Imports a pool as the [PoolManager]'s operator.
     #[access_control(ctx.accounts.validate())]
-    pub fn import_pool_as_operator(ctx: Context<ImportPoolAsOperator>, _bump: u8) -> ProgramResult {
+    pub fn import_pool_as_operator(ctx: Context<ImportPoolAsOperator>, _bump: u8) -> Result<()> {
         let bump = *unwrap_int!(ctx.bumps.get("pool"));
         import_pool::import_pool_unchecked(&mut ctx.accounts.import_pool, bump, false)
     }
 
     /// Ramp [SwapInfo]'s amplification coefficient to some target amplification coefficient.
     #[access_control(ctx.accounts.validate())]
-    pub fn ramp_a(ctx: Context<SwapContext>, target_amp: u64, stop_ramp_ts: i64) -> ProgramResult {
+    pub fn ramp_a(ctx: Context<SwapContext>, target_amp: u64, stop_ramp_ts: i64) -> Result<()> {
         let seeds: &[&[&[u8]]] = gen_pool_signer_seeds!(ctx.accounts.pool);
         let cpi_ctx = cpi_helpers::pool_admin_cpi_context(
             &ctx.accounts.pool,
@@ -106,7 +106,7 @@ pub mod pools {
 
     /// Stop ramping amplification coefficent.
     #[access_control(ctx.accounts.validate())]
-    pub fn stop_ramp_a(ctx: Context<SwapContext>) -> ProgramResult {
+    pub fn stop_ramp_a(ctx: Context<SwapContext>) -> Result<()> {
         let seeds: &[&[&[u8]]] = gen_pool_signer_seeds!(ctx.accounts.pool);
         let cpi_ctx = cpi_helpers::pool_admin_cpi_context(
             &ctx.accounts.pool,
@@ -119,7 +119,7 @@ pub mod pools {
 
     /// Pause the swap.
     #[access_control(ctx.accounts.validate())]
-    pub fn pause_swap(ctx: Context<SwapContext>) -> ProgramResult {
+    pub fn pause_swap(ctx: Context<SwapContext>) -> Result<()> {
         let seeds: &[&[&[u8]]] = gen_pool_signer_seeds!(ctx.accounts.pool);
         let cpi_ctx = cpi_helpers::pool_admin_cpi_context(
             &ctx.accounts.pool,
@@ -132,7 +132,7 @@ pub mod pools {
 
     /// Unpause the swap.
     #[access_control(ctx.accounts.validate())]
-    pub fn unpause_swap(ctx: Context<SwapContext>) -> ProgramResult {
+    pub fn unpause_swap(ctx: Context<SwapContext>) -> Result<()> {
         let seeds: &[&[&[u8]]] = gen_pool_signer_seeds!(ctx.accounts.pool);
         let cpi_ctx = cpi_helpers::pool_admin_cpi_context(
             &ctx.accounts.pool,
@@ -145,7 +145,7 @@ pub mod pools {
 
     /// Commits a new admin to [SwapInfo].
     #[access_control(ctx.accounts.validate())]
-    pub fn commit_new_admin(ctx: Context<CommitNewAdmin>) -> ProgramResult {
+    pub fn commit_new_admin(ctx: Context<CommitNewAdmin>) -> Result<()> {
         let seeds: &[&[&[u8]]] = gen_pool_signer_seeds!(ctx.accounts.pool);
 
         let admin_user_context = cpi_helpers::create_pool_admin_user_context(
@@ -165,7 +165,7 @@ pub mod pools {
 
     /// Apply the new admin on [SwapInfo].
     #[access_control(ctx.accounts.validate())]
-    pub fn apply_new_admin(ctx: Context<SwapContext>) -> ProgramResult {
+    pub fn apply_new_admin(ctx: Context<SwapContext>) -> Result<()> {
         let seeds: &[&[&[u8]]] = gen_pool_signer_seeds!(ctx.accounts.pool);
         let cpi_ctx = cpi_helpers::pool_admin_cpi_context(
             &ctx.accounts.pool,
@@ -178,7 +178,7 @@ pub mod pools {
 
     /// Set new fees on the [SwapInfo].
     #[access_control(ctx.accounts.validate())]
-    pub fn set_new_fees(ctx: Context<SwapContext>, new_fees: SwapFees) -> ProgramResult {
+    pub fn set_new_fees(ctx: Context<SwapContext>, new_fees: SwapFees) -> Result<()> {
         let seeds: &[&[&[u8]]] = gen_pool_signer_seeds!(ctx.accounts.pool);
         let cpi_ctx = cpi_helpers::pool_admin_cpi_context(
             &ctx.accounts.pool,
@@ -192,7 +192,7 @@ pub mod pools {
     /// Sends fees on a [Pool] fee account to an ATA controlled by the beneficiary.
     /// Anyone may call this.
     #[access_control(ctx.accounts.validate())]
-    pub fn send_fees_to_beneficiary(ctx: Context<SendFeesToBeneficiary>) -> ProgramResult {
+    pub fn send_fees_to_beneficiary(ctx: Context<SendFeesToBeneficiary>) -> Result<()> {
         let seeds: &[&[&[u8]]] = gen_pool_signer_seeds!(ctx.accounts.pool);
         token::transfer(
             CpiContext::new(
@@ -210,7 +210,7 @@ pub mod pools {
 
     /// Sets the [PoolManager::operator].
     #[access_control(ctx.accounts.validate())]
-    pub fn set_operator(ctx: Context<SetOperator>) -> ProgramResult {
+    pub fn set_operator(ctx: Context<SetOperator>) -> Result<()> {
         let pool_manager = &mut ctx.accounts.pool_manager;
         pool_manager.operator = ctx.accounts.operator.key();
 
@@ -219,7 +219,7 @@ pub mod pools {
 
     /// Sets the [PoolManager::beneficiary].
     #[access_control(ctx.accounts.validate())]
-    pub fn set_beneficiary(ctx: Context<SetBeneficiary>) -> ProgramResult {
+    pub fn set_beneficiary(ctx: Context<SetBeneficiary>) -> Result<()> {
         let pool_manager = &mut ctx.accounts.pool_manager;
         pool_manager.beneficiary = ctx.accounts.beneficiary.key();
 
@@ -361,7 +361,7 @@ pub struct SetBeneficiary<'info> {
 }
 
 /// Error codes.
-#[error]
+#[error_code]
 pub enum ErrorCode {
     #[msg("Must be admin to perform this action.")]
     NotAdmin,

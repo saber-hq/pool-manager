@@ -8,7 +8,7 @@ pub fn import_pool_unchecked(
     accounts: &mut ImportPoolPermissionless,
     bump: u8,
     permissionless_import: bool,
-) -> ProgramResult {
+) -> Result<()> {
     accounts.validate()?;
 
     let pool_manager = &mut accounts.pool_manager;
