@@ -22,6 +22,6 @@ default = []
 [dependencies]
 anchor-lang = ">=0.22"
 anchor-spl = ">=0.22"
-stable-swap-anchor = "^1.7.0"
+stable-swap-anchor = "^1.7.3"
 stable-swap-client = "^1.7.0"
 vipers = "^2.0.0"
