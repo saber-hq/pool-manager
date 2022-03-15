@@ -1,20 +1,18 @@
 import { GokiSDK } from "@gokiprotocol/client";
 import { SignerWallet, SolanaProvider } from "@saberhq/solana-contrib";
-import { Connection, PACKET_DATA_SIZE, PublicKey } from "@solana/web3.js";
+import { Connection, PACKET_DATA_SIZE } from "@solana/web3.js";
 import { BN } from "bn.js";
 
-import { readKeyfile } from "./readKeyfile";
+import {
+  BUFFER_AUTHORITY_KEYPAIR_PATH,
+  BUFFER_EXECUTOR_KEYPAIR_PATH,
+  PAYER_KEYPAIR_PATH,
+  SMART_WALLET,
+} from "./configs/keys";
+import { RPC_URL } from "./configs/rpc";
+import { readKeyfile } from "./helpers/readKeyfile";
 
-const DEFAULT_KEYFILE = "~/.config/solana/id.json";
-
-const PAYER_KEYPAIR_PATH = process.env.PAYER_KEYFILE ?? DEFAULT_KEYFILE;
-const BUFFER_AUTHORITY_KEYPAIR_PATH =
-  process.env.BUFFER_AUTHORITY_KEYFILE ?? DEFAULT_KEYFILE;
-const BUFFER_EXECUTOR_KEYPAIR_PATH =
-  process.env.BUFFER_EXECUTOR_KEYFILE ?? DEFAULT_KEYFILE;
-const RPC_URL = process.env.RPC_URL ?? "https://api.devnet.solana.com";
 const BUFFER_SIZE = 40 * PACKET_DATA_SIZE;
-const SMART_WALLET = PublicKey.default;
 
 const main = async () => {
   const connection = new Connection(RPC_URL);
