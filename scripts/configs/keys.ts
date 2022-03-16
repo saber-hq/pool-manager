@@ -9,3 +9,4 @@ export const BUFFER_EXECUTOR_KEYPAIR_PATH =
 
 export const SMART_WALLET = PublicKey.default;
 export const POOL_MANAGER = PublicKey.default;
+export const BUFFER_ACCOUNT = PublicKey.default;
