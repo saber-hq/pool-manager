@@ -1,5 +1,6 @@
 import { GokiSDK } from "@gokiprotocol/client";
 import type { Network } from "@saberhq/solana-contrib";
+import { formatNetwork } from "@saberhq/solana-contrib";
 import {
   SignerWallet,
   SolanaProvider,
@@ -11,7 +12,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import * as axios from "axios";
 
 import { PoolManagerSDK } from "../src";
-import { loadKeyConfigs, loadRpcURL } from "./helpers/loadConfigs";
+import { getRpcUrl, loadKeyConfigs } from "./helpers/loadConfigs";
 
 interface TokenInfo {
   adminFeeAccount: string;
@@ -144,9 +145,8 @@ interface RegistryData {
 }
 
 const main = async () => {
-  const connection = new Connection(
-    loadRpcURL((process.env.NETWORK as Network) ?? "devnet")
-  );
+  const network = formatNetwork((process.env.NETWORK as Network) ?? "devnet");
+  const connection = new Connection(getRpcUrl());
   const keysCfg = loadKeyConfigs();
   const provider = SolanaProvider.init({
     connection,
@@ -157,7 +157,7 @@ const main = async () => {
   const pmW = await pmSDK.loadManager(keysCfg.poolManager);
 
   const resp = await axios.default.get<RegistryData>(
-    `https://registry.saber.so/data/pools-info.${NETWORK}.json`
+    `https://registry.saber.so/data/pools-info.${network}.json`
   );
   const registryData = resp.data;
   const poolWrappers = await Promise.all(

@@ -49,6 +49,6 @@ export const loadRpcURL = (network: Network): string => {
 };
 
 export const getRpcUrl = (): string => {
-  const network = (process.env.network as Network) ?? "devnet";
+  const network = (process.env.NETWORK as Network) ?? "devnet";
   return loadRpcURL(network);
 };
