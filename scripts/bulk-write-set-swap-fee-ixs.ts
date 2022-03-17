@@ -1,4 +1,5 @@
 import { GokiSDK } from "@gokiprotocol/client";
+import type { Network } from "@saberhq/solana-contrib";
 import {
   SignerWallet,
   SolanaProvider,
@@ -10,14 +11,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import * as axios from "axios";
 
 import { PoolManagerSDK } from "../src";
-import {
-  BUFFER_ACCOUNT,
-  BUFFER_AUTHORITY_KEYPAIR_PATH,
-  PAYER_KEYPAIR_PATH,
-  POOL_MANAGER,
-} from "./configs/keys";
-import { NETWORK, RPC_URL } from "./configs/rpc";
-import { readKeyfile } from "./helpers/readKeyfile";
+import { loadKeyConfigs, loadRpcURL } from "./helpers/loadConfigs";
 
 interface TokenInfo {
   adminFeeAccount: string;
@@ -150,17 +144,17 @@ interface RegistryData {
 }
 
 const main = async () => {
-  const connection = new Connection(RPC_URL);
-  const payerKP = readKeyfile(PAYER_KEYPAIR_PATH);
-  const authorityKP = readKeyfile(BUFFER_AUTHORITY_KEYPAIR_PATH);
-
+  const connection = new Connection(
+    loadRpcURL((process.env.NETWORK as Network) ?? "devnet")
+  );
+  const keysCfg = loadKeyConfigs();
   const provider = SolanaProvider.init({
     connection,
-    wallet: new SignerWallet(payerKP),
+    wallet: new SignerWallet(keysCfg.payerKP),
   });
   const gokiSDK = GokiSDK.load({ provider });
   const pmSDK = PoolManagerSDK.load({ provider });
-  const pmW = await pmSDK.loadManager(POOL_MANAGER);
+  const pmW = await pmSDK.loadManager(keysCfg.poolManager);
 
   const resp = await axios.default.get<RegistryData>(
     `https://registry.saber.so/data/pools-info.${NETWORK}.json`
@@ -177,14 +171,16 @@ const main = async () => {
   );
 
   const ixs = poolWrappers.map((pw) => pw.setNewFees(RECOMMENDED_FEES));
-  const writeIxs = ixs.map((ix, i) =>
-    gokiSDK.instructionBuffer.appendInstruction(
-      BUFFER_ACCOUNT,
+  const writeIxs = ixs.map((ix, i) => {
+    const tx = gokiSDK.instructionBuffer.appendInstruction(
+      keysCfg.buffer,
       i,
       ix.getInstruction(0),
-      authorityKP.publicKey
-    )
-  );
+      keysCfg.bufferAuthorityKP.publicKey
+    );
+    tx.addSigners(keysCfg.bufferAuthorityKP);
+    return tx;
+  });
   const txs = TransactionEnvelope.combineAll(...writeIxs).partition();
 
   await Promise.all(

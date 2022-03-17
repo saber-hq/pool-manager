@@ -1,0 +1,8 @@
+{
+  "buffer": "",
+  "smartWallet": "",
+  "poolManager": "",
+  "payerKeyfile": "~/.config/solana/id.json",
+  "bufferAuthorityKeyfile": "~/.config/solana/id.json",
+  "executorAuthorityKeyfile": "~/.config/solana/id.json"
+}
