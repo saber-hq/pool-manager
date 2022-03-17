@@ -1,6 +1,6 @@
 {
   "localnet": "",
-  "devnet": "",
-  "testnet": "",
-  "mainnet-beta": ""
+  "devnet": "https://api.devnet.solana.com",
+  "testnet": "https://api.testnet.solana.com",
+  "mainnet-beta": "https://api.mainnet-beta.solana.com"
 }

@@ -26,9 +26,12 @@ const main = async () => {
   );
   tx.addSigners(keysCfg.bufferAuthorityKP, keysCfg.executorAuthorityKP);
   const pendingTx = await tx.send();
-  await pendingTx.wait();
+  const confirmedTx = await pendingTx.wait();
+  confirmedTx.printLogs();
 
-  JSON.stringify({ bufferAccount: bufferAccount.toString() }, null, 2);
+  console.log(
+    JSON.stringify({ bufferAccount: bufferAccount.toString() }, null, 2)
+  );
 };
 
 main()
