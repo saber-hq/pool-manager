@@ -12,6 +12,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import * as axios from "axios";
 
 import { PoolManagerSDK } from "../src";
+import { PoolWrapper } from "../src/wrappers/pool";
 import { getRpcUrl, loadKeyConfigs } from "./helpers/loadConfigs";
 
 interface TokenInfo {
@@ -161,16 +162,25 @@ const main = async () => {
   );
   const registryData = resp.data;
   const poolWrappers = await Promise.all(
-    registryData.pools.map(
-      async (p) =>
-        await pmW.loadPoolWrapperFromMints(
+    registryData.pools.map(async (p) => {
+      try {
+        return await pmW.loadPoolWrapperFromMints(
           new PublicKey(p.swap.state.tokenA.mint),
           new PublicKey(p.swap.state.tokenB.mint)
-        )
-    )
+        );
+      } catch (e) {
+        const error = e as Error;
+        console.error(
+          `failed to load pool wrapper for ${p.name}; ${error.message}`
+        );
+        return null;
+      }
+    })
   );
 
-  const ixs = poolWrappers.map((pw) => pw.setNewFees(RECOMMENDED_FEES));
+  const ixs = poolWrappers
+    .filter((pw): pw is PoolWrapper => !!pw)
+    .map((pw) => pw.setNewFees(RECOMMENDED_FEES));
   const writeIxs = ixs.map((ix, i) => {
     const tx = gokiSDK.instructionBuffer.appendInstruction(
       keysCfg.buffer,
@@ -181,7 +191,7 @@ const main = async () => {
     tx.addSigners(keysCfg.bufferAuthorityKP);
     return tx;
   });
-  const txs = TransactionEnvelope.combineAll(...writeIxs).partition();
+  const txs = TransactionEnvelope.pack(...writeIxs);
 
   await Promise.all(
     txs.map(async (tx) => {
