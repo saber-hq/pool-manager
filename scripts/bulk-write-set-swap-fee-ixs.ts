@@ -6,15 +6,20 @@ import {
   SolanaProvider,
 } from "@saberhq/solana-contrib";
 import type { Fees } from "@saberhq/stableswap-sdk";
-import { RECOMMENDED_FEES } from "@saberhq/stableswap-sdk";
+import { Percent } from "@saberhq/token-utils";
 import { Connection, PublicKey } from "@solana/web3.js";
 import * as axios from "axios";
+import { BN } from "bn.js";
+import zip from "lodash.zip";
 import invariant from "tiny-invariant";
 
-import { PoolManagerSDK } from "../src";
-import type { PoolWrapper } from "../src/wrappers/pool";
+import type { PoolData } from "../src";
+import { findSaberPool, PoolManagerSDK } from "../src";
+import { PoolWrapper } from "../src/wrappers/pool";
 import { loadBuffers } from "./helpers/loadBuffers";
 import { getRpcUrl, loadKeyConfigs } from "./helpers/loadConfigs";
+
+const NEW_ADMIN_FEE = new Percent(new BN(50), new BN(100));
 
 interface TokenInfo {
   adminFeeAccount: string;
@@ -90,9 +95,6 @@ interface StableSwapState {
 interface PoolInfo {
   id: string;
   name: string;
-  tokens: any;
-  tokenIcons: any;
-  underlyingIcons: any;
   currency: string;
   lpToken: string;
 
@@ -137,12 +139,9 @@ interface PoolInfo {
      */
     link?: string;
   };
-  tags?: readonly any[];
-  summary: any;
 }
 
 interface RegistryData {
-  addresses: any;
   pools: PoolInfo[];
 }
 
@@ -164,26 +163,58 @@ const main = async () => {
     }.json`
   );
   const registryData = resp.data;
-  const poolWrappers = await Promise.all(
-    registryData.pools.slice(0, 3).map(async (p) => {
-      try {
-        return await pmW.loadPoolWrapperFromMints(
-          new PublicKey(p.swap.state.tokenA.mint),
-          new PublicKey(p.swap.state.tokenB.mint)
-        );
-      } catch (e) {
-        const error = e as Error;
-        console.warn(
-          `failed to load pool wrapper for ${p.name}; ${error.message}`
-        );
-        return null;
-      }
+
+  const poolKeys = await Promise.all(
+    registryData.pools.map(async (poolInfo) => {
+      const [poolKey] = await findSaberPool(
+        keysCfg.poolManager,
+        new PublicKey(poolInfo.swap.state.tokenA.mint),
+        new PublicKey(poolInfo.swap.state.tokenB.mint)
+      );
+      return poolKey;
     })
   );
 
-  const ixs = poolWrappers
-    .filter((pw): pw is PoolWrapper => !!pw)
-    .map((pw) => pw.setNewFees(RECOMMENDED_FEES));
+  const poolsData = await pmSDK.provider.connection.getMultipleAccountsInfo(
+    poolKeys
+  );
+  const poolsDataParsed = poolsData.map((buf) => {
+    const data = buf?.data;
+    invariant(data, "data not found");
+    return pmSDK.programs.Pools.coder.accounts.decode<PoolData>("Pool", data);
+  });
+
+  const poolWrappers = zip(poolKeys, poolsDataParsed).map(
+    ([key, parsedData]) => {
+      invariant(key, "pool key not found");
+      invariant(pmW.data, "poolManager data");
+      invariant(parsedData, "pool data not found");
+
+      return new PoolWrapper(pmSDK, key, parsedData, pmW.data.admin);
+    }
+  );
+
+  const ixs = await Promise.all(
+    poolWrappers.map((pw) => {
+      const swap = pw.data.swap;
+      const poolInfo = registryData.pools.find(
+        (poolInfo) => poolInfo.swap.config.swapAccount === swap.toString()
+      );
+      invariant(poolInfo, "poolInfo not found");
+      const {
+        adminTrade: __unused1,
+        adminWithdraw: __unused2,
+        ...prevFees
+      } = poolInfo.swap.state.fees;
+
+      const newFees: Fees = {
+        adminTrade: NEW_ADMIN_FEE,
+        adminWithdraw: NEW_ADMIN_FEE,
+        ...prevFees,
+      };
+      return pw.setNewFees(newFees);
+    })
+  );
 
   const buffers = loadBuffers();
   const bundleIndices = new Array<number>(buffers.length).fill(0);
@@ -221,14 +252,16 @@ const main = async () => {
     txs.push(tx2 ? tx1.combine(tx2) : tx1);
   }
 
-  await Promise.all(
-    txs.map(async (tx) => {
-      const pendingTx = await tx.send();
-      const confirmedTx = await pendingTx.wait({ commitment: "finalized" });
-      confirmedTx.printLogs();
-      console.log("\n");
-    })
-  );
+  if (network === "mainnet" && process.env.DRY_RUN === "false") {
+    await Promise.all(
+      txs.map(async (tx) => {
+        const pendingTx = await tx.send();
+        const confirmedTx = await pendingTx.wait({ commitment: "finalized" });
+        confirmedTx.printLogs();
+        console.log("\n");
+      })
+    );
+  }
 
   console.log(
     `wrote to buffers ... ${buffers.map((b) => b.toString()).join(", ")}`
