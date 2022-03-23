@@ -64,6 +64,7 @@
     "*.nix": "nixfmt"
   },
   "scripts": {
+    "init:buffers": "rm -rf .configs/buffers && ts-node ./scripts/init-buffers.ts",
     "build": "tsc -P tsconfig.build.json && tsc -P tsconfig.esm.json",
     "typecheck": "tsc",
     "lint": "eslint . --cache",

@@ -5,9 +5,7 @@ import { PublicKey } from "@solana/web3.js";
 import * as keysRaw from "../../.configs/keys.json";
 import * as rpcRaw from "../../.configs/rpc.json";
 import { readKeyfile } from "./readKeyfile";
-
 interface KeysRaw {
-  buffers: string[];
   smartWallet: string;
   poolManager: string;
   payerKeyfile: string;
@@ -16,7 +14,6 @@ interface KeysRaw {
 }
 
 export interface KeysConfig {
-  buffers: PublicKey[];
   smartWallet: PublicKey;
   poolManager: PublicKey;
   payerKP: Keypair;
@@ -34,7 +31,6 @@ export interface RpcUrls {
 export const loadKeyConfigs = (): KeysConfig => {
   const keys = keysRaw as KeysRaw;
   return {
-    buffers: keysRaw.buffers.map((b) => new PublicKey(b)),
     smartWallet: new PublicKey(keys.smartWallet),
     poolManager: new PublicKey(keys.poolManager),
     payerKP: readKeyfile(keys.payerKeyfile),

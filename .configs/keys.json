@@ -1,9 +1,4 @@
 {
-  "buffers": [
-    "4yBGrPMuofAJhJS1q6JNDaYzFUYet5tTeGPT2kav6Qzp",
-    "4DTDr4YrD53vusvcf2jqZC16zc3G8oB9Hcr9YB12juic",
-    "2sc5Z4SRXkc6WpCxm9J11h2r1UsZnZdtWMym2ZXn2PD3"
-  ],
   "smartWallet": "BkkBFsRm6VCbZyBG82yuHBnyjJwUJHv1nTJ3GiY44Tkr",
   "poolManager": "XD5s9eMuSibXzczBysd8VmG6nVe7DjqMQK1iZMQjANd",
   "payerKeyfile": "~/.config/solana/id.json",

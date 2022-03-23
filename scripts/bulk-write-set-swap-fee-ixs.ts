@@ -1,10 +1,9 @@
 import { GokiSDK } from "@gokiprotocol/client";
-import type { Network } from "@saberhq/solana-contrib";
+import type { Network, TransactionEnvelope } from "@saberhq/solana-contrib";
 import {
   formatNetwork,
   SignerWallet,
   SolanaProvider,
-  TransactionEnvelope,
 } from "@saberhq/solana-contrib";
 import type { Fees } from "@saberhq/stableswap-sdk";
 import { RECOMMENDED_FEES } from "@saberhq/stableswap-sdk";
@@ -14,6 +13,7 @@ import invariant from "tiny-invariant";
 
 import { PoolManagerSDK } from "../src";
 import type { PoolWrapper } from "../src/wrappers/pool";
+import { loadBuffers } from "./helpers/loadBuffers";
 import { getRpcUrl, loadKeyConfigs } from "./helpers/loadConfigs";
 
 interface TokenInfo {
@@ -185,14 +185,15 @@ const main = async () => {
     .filter((pw): pw is PoolWrapper => !!pw)
     .map((pw) => pw.setNewFees(RECOMMENDED_FEES));
 
-  const bundleIndices = new Array<number>(keysCfg.buffers.length).fill(0);
+  const buffers = loadBuffers();
+  const bundleIndices = new Array<number>(buffers.length).fill(0);
   const appendBufferTxs: TransactionEnvelope[] = [];
   for (let i = 0; i < 100; i++) {
     const ix = ixs[i % ixs.length]?.getInstruction(0);
     invariant(ix, "instruction");
 
-    const bufferIdx = i % keysCfg.buffers.length;
-    const buffer = keysCfg.buffers[bufferIdx];
+    const bufferIdx = i % buffers.length;
+    const buffer = buffers[bufferIdx];
     invariant(buffer, "buffer does not exist");
 
     const bundleIdx = bundleIndices[bufferIdx];
@@ -209,23 +210,28 @@ const main = async () => {
     appendBufferTxs.push(tx);
   }
 
-  const txs = TransactionEnvelope.pack(...appendBufferTxs);
+  const txs: TransactionEnvelope[] = [];
+  while (appendBufferTxs) {
+    const tx1 = appendBufferTxs.shift();
+    if (!tx1) {
+      break;
+    }
+
+    const tx2 = appendBufferTxs.pop();
+    txs.push(tx2 ? tx1.combine(tx2) : tx1);
+  }
+
   await Promise.all(
-    txs.map(async (tx, i) => {
-      console.log("tx number:", i);
+    txs.map(async (tx) => {
       const pendingTx = await tx.send();
       const confirmedTx = await pendingTx.wait({ commitment: "confirmed" });
       confirmedTx.printLogs();
+      console.log("\n");
     })
   );
 
-  await Promise.all(
-    keysCfg.buffers.map(async (buffer) => {
-      const bufferData = await gokiSDK.instructionBuffer.loadData(buffer);
-      console.log(
-        `buffer ${buffer.toString()}, bundles: ${bufferData.bundles.length}`
-      );
-    })
+  console.log(
+    `wrote to buffers ... ${buffers.map((b) => b.toString()).join(",")}`
   );
 };
 

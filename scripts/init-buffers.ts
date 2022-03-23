@@ -2,10 +2,11 @@ import { GokiSDK } from "@gokiprotocol/client";
 import { SignerWallet, SolanaProvider } from "@saberhq/solana-contrib";
 import { Connection, PACKET_DATA_SIZE } from "@solana/web3.js";
 import { BN } from "bn.js";
+import * as fs from "fs/promises";
 
 import { getRpcUrl, loadKeyConfigs } from "./helpers/loadConfigs";
 
-const NUM_BUFFERS = 3;
+const NUM_BUFFERS = process.env.NUM_BUFFERS ?? 3;
 const BUFFER_SIZE = 30 * PACKET_DATA_SIZE;
 export const NUM_BUNDLES = 40;
 
@@ -22,6 +23,7 @@ const main = async () => {
     provider,
   });
 
+  const buffers = [];
   for (let i = 0; i < NUM_BUFFERS; i++) {
     const { tx, bufferAccount: bufferAccount } =
       await gokiSDK.instructionBuffer.initBuffer({
@@ -36,14 +38,15 @@ const main = async () => {
     const pendingTx = await tx.send();
     const confirmedTx = await pendingTx.wait();
     confirmedTx.printLogs();
-    console.log(
-      JSON.stringify(
-        { number: i, bufferAccount: bufferAccount.toString() },
-        null,
-        2
-      )
-    );
+
+    buffers.push(bufferAccount.toString());
   }
+
+  const buffersJSON = JSON.stringify({ buffers }, null, 2);
+  console.log(buffersJSON);
+
+  const f = `${__dirname}/../.configs/buffers.json`;
+  await fs.writeFile(f, buffersJSON);
 };
 
 main()
