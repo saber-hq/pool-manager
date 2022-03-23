@@ -39,7 +39,7 @@
     "@types/lodash.mapvalues": "^4.6.6",
     "@types/lodash.zip": "^4.2.6",
     "@types/mocha": "^9.1.0",
-    "@types/node": "^16.11.25",
+    "@types/node": "^17.0.23",
     "@yarnpkg/doctor": "^3.1.1-rc.2",
     "bn.js": "^5.2.0",
     "chai": "=4.3.4",
