@@ -224,14 +224,14 @@ const main = async () => {
   await Promise.all(
     txs.map(async (tx) => {
       const pendingTx = await tx.send();
-      const confirmedTx = await pendingTx.wait({ commitment: "confirmed" });
+      const confirmedTx = await pendingTx.wait({ commitment: "finalized" });
       confirmedTx.printLogs();
       console.log("\n");
     })
   );
 
   console.log(
-    `wrote to buffers ... ${buffers.map((b) => b.toString()).join(",")}`
+    `wrote to buffers ... ${buffers.map((b) => b.toString()).join(", ")}`
   );
 };
 

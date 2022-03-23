@@ -1,14 +1,14 @@
 import { GokiSDK } from "@gokiprotocol/client";
 import { SignerWallet, SolanaProvider } from "@saberhq/solana-contrib";
-import { Connection, PACKET_DATA_SIZE } from "@solana/web3.js";
+import { Connection } from "@solana/web3.js";
 import { BN } from "bn.js";
 import * as fs from "fs/promises";
 
 import { getRpcUrl, loadKeyConfigs } from "./helpers/loadConfigs";
 
-const NUM_BUFFERS = process.env.NUM_BUFFERS ?? 3;
-const BUFFER_SIZE = 30 * PACKET_DATA_SIZE;
-export const NUM_BUNDLES = 40;
+const NUM_BUFFERS = process.env.NUM_BUFFERS ?? 4;
+const BUFFER_SIZE = parseInt(process.env.BUFFER_SIZE ?? (100 * 412).toString());
+export const NUM_BUNDLES = 25;
 
 const main = async () => {
   const connection = new Connection(getRpcUrl());
