@@ -181,7 +181,12 @@ const main = async () => {
   const poolsDataParsed = poolsData.map((buf) => {
     const data = buf?.data;
     invariant(data, "data not found");
-    return pmSDK.programs.Pools.coder.accounts.decode<PoolData>("Pool", data);
+    console.log({ data });
+    return pmSDK.programs.Pools.coder.accounts.decode<PoolData>(
+      "Pool",
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      data as Buffer
+    );
   });
 
   const poolWrappers = zip(poolKeys, poolsDataParsed).map(
@@ -261,11 +266,11 @@ const main = async () => {
         console.log("\n");
       })
     );
-  }
 
-  console.log(
-    `wrote to buffers ... ${buffers.map((b) => b.toString()).join(", ")}`
-  );
+    console.log(
+      `wrote to buffers ... ${buffers.map((b) => b.toString()).join(", ")}`
+    );
+  }
 };
 
 main()
