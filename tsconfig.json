@@ -1,7 +1,9 @@
 {
   "extends": "@saberhq/tsconfig/tsconfig.lib.json",
   "compilerOptions": {
-    "module": "CommonJS"
+    "module": "CommonJS",
+    "resolveJsonModule": true,
+    "types": ["node"]
   },
-  "include": ["./src", "./tests", "scripts/"]
+  "include": ["./src", "./tests", "./scripts", "./configs"]
 }

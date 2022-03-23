@@ -1,0 +1,6 @@
+{
+  "localnet": "http://localhost:8899",
+  "devnet": "https://api.devnet.solana.com",
+  "testnet": "https://api.testnet.solana.com",
+  "mainnet-beta": "https://api.mainnet-beta.solana.com"
+}

@@ -23,6 +23,7 @@
     "access": "public"
   },
   "devDependencies": {
+    "@gokiprotocol/client": "^0.10.0",
     "@project-serum/anchor": "^0.21.0",
     "@rushstack/eslint-patch": "^1.1.0",
     "@saberhq/anchor-contrib": "^1.12.44",
@@ -39,8 +40,9 @@
     "@types/lodash.mapvalues": "^4.6.6",
     "@types/lodash.zip": "^4.2.6",
     "@types/mocha": "^9.1.0",
-    "@types/node": "^16.11.25",
+    "@types/node": "^17.0.21",
     "@yarnpkg/doctor": "^3.1.1-rc.2",
+    "axios": "^0.26.1",
     "bn.js": "^5.2.0",
     "chai": "=4.3.4",
     "eslint": "^8.9.0",
@@ -62,6 +64,7 @@
     "*.nix": "nixfmt"
   },
   "scripts": {
+    "init:buffers": "rm -rf .configs/buffers && ts-node ./scripts/init-buffers.ts",
     "build": "tsc -P tsconfig.build.json && tsc -P tsconfig.esm.json",
     "typecheck": "tsc",
     "lint": "eslint . --cache",
