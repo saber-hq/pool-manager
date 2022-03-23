@@ -7,7 +7,7 @@ import * as rpcRaw from "../../.configs/rpc.json";
 import { readKeyfile } from "./readKeyfile";
 
 interface KeysRaw {
-  buffer: string;
+  buffers: string[];
   smartWallet: string;
   poolManager: string;
   payerKeyfile: string;
@@ -16,7 +16,7 @@ interface KeysRaw {
 }
 
 export interface KeysConfig {
-  buffer: PublicKey;
+  buffers: PublicKey[];
   smartWallet: PublicKey;
   poolManager: PublicKey;
   payerKP: Keypair;
@@ -34,7 +34,7 @@ export interface RpcUrls {
 export const loadKeyConfigs = (): KeysConfig => {
   const keys = keysRaw as KeysRaw;
   return {
-    buffer: new PublicKey(keys.buffer),
+    buffers: keysRaw.buffers.map((b) => new PublicKey(b)),
     smartWallet: new PublicKey(keys.smartWallet),
     poolManager: new PublicKey(keys.poolManager),
     payerKP: readKeyfile(keys.payerKeyfile),

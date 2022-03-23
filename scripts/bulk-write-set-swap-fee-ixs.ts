@@ -1,7 +1,7 @@
 import { GokiSDK } from "@gokiprotocol/client";
 import type { Network } from "@saberhq/solana-contrib";
-import { formatNetwork } from "@saberhq/solana-contrib";
 import {
+  formatNetwork,
   SignerWallet,
   SolanaProvider,
   TransactionEnvelope,
@@ -10,9 +10,10 @@ import type { Fees } from "@saberhq/stableswap-sdk";
 import { RECOMMENDED_FEES } from "@saberhq/stableswap-sdk";
 import { Connection, PublicKey } from "@solana/web3.js";
 import * as axios from "axios";
+import invariant from "tiny-invariant";
 
 import { PoolManagerSDK } from "../src";
-import { PoolWrapper } from "../src/wrappers/pool";
+import type { PoolWrapper } from "../src/wrappers/pool";
 import { getRpcUrl, loadKeyConfigs } from "./helpers/loadConfigs";
 
 interface TokenInfo {
@@ -158,11 +159,13 @@ const main = async () => {
   const pmW = await pmSDK.loadManager(keysCfg.poolManager);
 
   const resp = await axios.default.get<RegistryData>(
-    `https://registry.saber.so/data/pools-info.${network}.json`
+    `https://registry.saber.so/data/pools-info.${
+      network === "localnet" ? "devnet" : network
+    }.json`
   );
   const registryData = resp.data;
   const poolWrappers = await Promise.all(
-    registryData.pools.map(async (p) => {
+    registryData.pools.slice(0, 3).map(async (p) => {
       try {
         return await pmW.loadPoolWrapperFromMints(
           new PublicKey(p.swap.state.tokenA.mint),
@@ -170,7 +173,7 @@ const main = async () => {
         );
       } catch (e) {
         const error = e as Error;
-        console.error(
+        console.warn(
           `failed to load pool wrapper for ${p.name}; ${error.message}`
         );
         return null;
@@ -181,23 +184,47 @@ const main = async () => {
   const ixs = poolWrappers
     .filter((pw): pw is PoolWrapper => !!pw)
     .map((pw) => pw.setNewFees(RECOMMENDED_FEES));
-  const writeIxs = ixs.map((ix, i) => {
+
+  const bundleIndices = new Array<number>(keysCfg.buffers.length).fill(0);
+  const appendBufferTxs: TransactionEnvelope[] = [];
+  for (let i = 0; i < 100; i++) {
+    const ix = ixs[i % ixs.length]?.getInstruction(0);
+    invariant(ix, "instruction");
+
+    const bufferIdx = i % keysCfg.buffers.length;
+    const buffer = keysCfg.buffers[bufferIdx];
+    invariant(buffer, "buffer does not exist");
+
+    const bundleIdx = bundleIndices[bufferIdx];
+    invariant(bundleIdx !== undefined, "bundleIdx");
     const tx = gokiSDK.instructionBuffer.appendInstruction(
-      keysCfg.buffer,
-      i,
-      ix.getInstruction(0),
+      buffer,
+      bundleIdx,
+      ix,
       keysCfg.bufferAuthorityKP.publicKey
     );
+    bundleIndices[bufferIdx] = bundleIdx + 1;
+
     tx.addSigners(keysCfg.bufferAuthorityKP);
-    return tx;
-  });
-  const txs = TransactionEnvelope.pack(...writeIxs);
+    appendBufferTxs.push(tx);
+  }
+
+  const txs = TransactionEnvelope.pack(...appendBufferTxs);
+  await Promise.all(
+    txs.map(async (tx, i) => {
+      console.log("tx number:", i);
+      const pendingTx = await tx.send();
+      const confirmedTx = await pendingTx.wait({ commitment: "confirmed" });
+      confirmedTx.printLogs();
+    })
+  );
 
   await Promise.all(
-    txs.map(async (tx) => {
-      const pendingTx = await tx.send();
-      const confirmedTx = await pendingTx.wait();
-      confirmedTx.printLogs();
+    keysCfg.buffers.map(async (buffer) => {
+      const bufferData = await gokiSDK.instructionBuffer.loadData(buffer);
+      console.log(
+        `buffer ${buffer.toString()}, bundles: ${bufferData.bundles.length}`
+      );
     })
   );
 };
