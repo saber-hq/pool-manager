@@ -238,6 +238,7 @@ pub struct NewPoolManager<'info> {
             base.key().to_bytes().as_ref()
         ],
         bump,
+        space = 8 + PoolManager::LEN,
         payer = payer
     )]
     pub pool_manager: Account<'info, PoolManager>,
@@ -283,6 +284,7 @@ pub struct ImportPoolPermissionless<'info> {
             swap.sorted_mints().1.to_bytes().as_ref()
         ],
         bump,
+        space = 8 + Pool::LEN,
         payer = payer
     )]
     pub pool: Box<Account<'info, Pool>>,

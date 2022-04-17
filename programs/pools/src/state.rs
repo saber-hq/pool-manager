@@ -1,6 +1,6 @@
 //! Accounts state.
 
-use anchor_lang::prelude::*;
+use anchor_lang::{prelude::*, solana_program::pubkey::PUBKEY_BYTES};
 use stable_swap_anchor::SwapInfo;
 
 /// Manages all [Pool]s.
@@ -34,6 +34,12 @@ pub struct PoolManager {
     pub beneficiary: Pubkey,
 }
 
+impl PoolManager {
+    /// Number of bytes in a serialized [PoolManager].
+    pub const LEN: usize =
+        PUBKEY_BYTES + 1 + 8 + PUBKEY_BYTES * 2 + SwapFees::LEN + 8 + 8 + PUBKEY_BYTES * 2;
+}
+
 /// The admin of a [stable_swap_anchor::SwapInfo].
 #[account]
 #[derive(Copy, Default, Debug)]
@@ -63,6 +69,11 @@ pub struct Pool {
     pub token_decimals: u8,
     /// Flag indicating if the pool was imported with [crate::pools::import_pool_permissionless].
     pub permissionless_import: bool,
+}
+
+impl Pool {
+    /// Number of bytes in a serialized [Pool].
+    pub const LEN: usize = PUBKEY_BYTES * 3 + 1 + PUBKEY_BYTES + 8 + PUBKEY_BYTES * 3 + 1 + 1;
 }
 
 /// Gets the sorted mints of the [Pool].
@@ -115,6 +126,11 @@ pub struct SwapFees {
     pub withdraw_fee_numerator: u64,
     /// Withdraw fee denominator
     pub withdraw_fee_denominator: u64,
+}
+
+impl SwapFees {
+    /// Number of bytes in a serialized [SwapFees].
+    pub const LEN: usize = 8 * 8;
 }
 
 impl From<SwapFees> for stable_swap_client::fees::Fees {
