@@ -59,7 +59,7 @@
   "lint-staged": {
     "*.{ts,tsx}": "eslint --cache --fix",
     "*.{js,jsx,json,html,css,md}": "prettier --write",
-    "*.nix": "nixfmt"
+    "*.nix": "nixpkgs-fmt"
   },
   "scripts": {
     "build": "tsc -P tsconfig.build.json && tsc -P tsconfig.esm.json",
