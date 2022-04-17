@@ -2,11 +2,12 @@
 let
   anchor-parse-idls = pkgs.writeShellScriptBin "anchor-parse-idls"
     (builtins.readFile ./scripts/idl.sh);
-in pkgs.buildEnv {
+in
+pkgs.buildEnv {
   name = "ci";
   paths = with pkgs;
-    (pkgs.lib.optionals pkgs.stdenv.isLinux ([ libudev ])) ++ [
-      anchor-0_21_0
+    (pkgs.lib.optionals pkgs.stdenv.isLinux ([ udev ])) ++ [
+      anchor-0_24_2
       anchor-parse-idls
       solana-basic
       cargo-workspaces

@@ -72,6 +72,10 @@ export class PoolManagerWrapper {
     this.data = data;
   }
 
+  get provider() {
+    return this.sdk.provider;
+  }
+
   /**
    *  Loads this {@link PoolManagerWrapper} with the given signer.
    * @param signer
@@ -457,7 +461,7 @@ export class PoolManagerWrapper {
       lpMint,
       tokenAFees,
       tokenBFees,
-      payer: this.program.provider.wallet.publicKey,
+      payer: this.provider.wallet.publicKey,
       systemProgram: SystemProgram.programId,
     };
   }

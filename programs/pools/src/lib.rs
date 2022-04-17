@@ -238,6 +238,7 @@ pub struct NewPoolManager<'info> {
             base.key().to_bytes().as_ref()
         ],
         bump,
+        space = 8 + PoolManager::LEN,
         payer = payer
     )]
     pub pool_manager: Account<'info, PoolManager>,
@@ -245,13 +246,16 @@ pub struct NewPoolManager<'info> {
     /// Base key.
     pub base: Signer<'info>,
 
-    /// Admin of the [PoolManager].
+    /// Initial admin of the [PoolManager].
+    /// CHECK: Initializer.
     pub admin: UncheckedAccount<'info>,
 
-    /// Operator of the [PoolManager].
+    /// Initial operator of the [PoolManager].
+    /// CHECK: Initializer.
     pub operator: UncheckedAccount<'info>,
 
-    /// Beneficiary of the [PoolManager].
+    /// Initial beneficiary of the [PoolManager].
+    /// CHECK: Initializer.
     pub beneficiary: UncheckedAccount<'info>,
 
     /// Payer of the [PoolManager] initialization.
@@ -283,6 +287,7 @@ pub struct ImportPoolPermissionless<'info> {
             swap.sorted_mints().1.to_bytes().as_ref()
         ],
         bump,
+        space = 8 + Pool::LEN,
         payer = payer
     )]
     pub pool: Box<Account<'info, Pool>>,
@@ -316,7 +321,7 @@ pub struct ImportPoolAsOperator<'info> {
 pub struct SwapContext<'info> {
     pub pool_manager: Account<'info, PoolManager>,
     #[account(mut)]
-    pub swap: AccountInfo<'info>,
+    pub swap: Account<'info, SwapInfo>,
     pub pool: Account<'info, Pool>,
     pub swap_program: Program<'info, StableSwap>,
     pub admin: Signer<'info>,
@@ -326,9 +331,10 @@ pub struct SwapContext<'info> {
 pub struct CommitNewAdmin<'info> {
     pub pool_manager: Account<'info, PoolManager>,
     #[account(mut)]
-    pub swap: UncheckedAccount<'info>,
+    pub swap: Account<'info, SwapInfo>,
     pub pool: Account<'info, Pool>,
     pub admin: Signer<'info>,
+    /// CHECK: Arbitrary.
     pub new_admin: UncheckedAccount<'info>,
     pub swap_program: Program<'info, StableSwap>,
 }
@@ -349,6 +355,7 @@ pub struct SetOperator<'info> {
     #[account(mut)]
     pub pool_manager: Account<'info, PoolManager>,
     pub admin: Signer<'info>,
+    /// CHECK: Arbitrary account.
     pub operator: UncheckedAccount<'info>,
 }
 
@@ -357,6 +364,8 @@ pub struct SetBeneficiary<'info> {
     #[account(mut)]
     pub pool_manager: Account<'info, PoolManager>,
     pub admin: Signer<'info>,
+    /// The account which will be able to receive all admin fees accrued by pools.
+    /// CHECK: Arbitrary account.
     pub beneficiary: UncheckedAccount<'info>,
 }
 
