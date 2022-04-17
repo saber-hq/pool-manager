@@ -27,7 +27,7 @@ function loadProvider(): Provider {
   if (!ANCHOR_PROVIDER_URL) {
     throw new Error("no anchor provider URL");
   }
-  const anchorProvider = anchor.getProvider();
+  const anchorProvider = anchor.AnchorProvider.env();
   const provider = makeSaberProvider(anchorProvider);
   return provider;
 }
