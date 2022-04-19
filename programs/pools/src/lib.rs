@@ -43,7 +43,7 @@ pub mod pools {
     pub fn new_pool_manager(ctx: Context<NewPoolManager>, _bump: u8) -> Result<()> {
         let pool_manager = &mut ctx.accounts.pool_manager;
         pool_manager.base = ctx.accounts.base.key();
-        pool_manager.bump = *unwrap_int!(ctx.bumps.get("pool_manager"));
+        pool_manager.bump = unwrap_bump!(ctx, "pool_manager");
         pool_manager.num_pools = 0;
 
         pool_manager.admin = ctx.accounts.admin.key();
@@ -80,14 +80,14 @@ pub mod pools {
         _bump: u8,
     ) -> Result<()> {
         ctx.accounts.validate_initial_parameters()?;
-        let bump = *unwrap_int!(ctx.bumps.get("pool"));
+        let bump = unwrap_bump!(ctx, "pool");
         import_pool::import_pool_unchecked(ctx.accounts, bump, true)
     }
 
     /// Imports a pool as the [PoolManager]'s operator.
     #[access_control(ctx.accounts.validate())]
     pub fn import_pool_as_operator(ctx: Context<ImportPoolAsOperator>, _bump: u8) -> Result<()> {
-        let bump = *unwrap_int!(ctx.bumps.get("pool"));
+        let bump = unwrap_bump!(ctx, "pool");
         import_pool::import_pool_unchecked(&mut ctx.accounts.import_pool, bump, false)
     }
 
@@ -268,7 +268,6 @@ pub struct NewPoolManager<'info> {
 
 /// Accounts for [pools::import_pool_permissionless].
 #[derive(Accounts)]
-#[instruction(bump: u8)]
 pub struct ImportPoolPermissionless<'info> {
     /// The [PoolManager].
     #[account(mut)]
@@ -293,9 +292,11 @@ pub struct ImportPoolPermissionless<'info> {
     pub pool: Box<Account<'info, Pool>>,
 
     /// Fee account for token A.
+    #[account(address = swap.token_a.admin_fees)]
     pub token_a_fees: Box<Account<'info, TokenAccount>>,
 
     /// Fee account for token B.
+    #[account(address = swap.token_b.admin_fees)]
     pub token_b_fees: Box<Account<'info, TokenAccount>>,
 
     /// Mint of the LP token.
@@ -317,11 +318,17 @@ pub struct ImportPoolAsOperator<'info> {
     pub import_pool: ImportPoolPermissionless<'info>,
 }
 
+/// Accounts for admin-related swap operations.
 #[derive(Accounts)]
 pub struct SwapContext<'info> {
+    #[account(has_one = admin @ ErrorCode::NotAdmin)]
     pub pool_manager: Account<'info, PoolManager>,
     #[account(mut)]
     pub swap: Account<'info, SwapInfo>,
+    #[account(
+        has_one = swap,
+        constraint = pool.manager == pool_manager.key()
+    )]
     pub pool: Account<'info, Pool>,
     pub swap_program: Program<'info, StableSwap>,
     pub admin: Signer<'info>,
@@ -329,9 +336,14 @@ pub struct SwapContext<'info> {
 
 #[derive(Accounts)]
 pub struct CommitNewAdmin<'info> {
+    #[account(
+        address = pool.manager,
+        has_one = admin @ ErrorCode::NotAdmin
+    )]
     pub pool_manager: Account<'info, PoolManager>,
     #[account(mut)]
     pub swap: Account<'info, SwapInfo>,
+    #[account(has_one = swap)]
     pub pool: Account<'info, Pool>,
     pub admin: Signer<'info>,
     /// CHECK: Arbitrary.
@@ -341,9 +353,13 @@ pub struct CommitNewAdmin<'info> {
 
 #[derive(Accounts)]
 pub struct SendFeesToBeneficiary<'info> {
+    #[account(address = pool.manager)]
     pub pool_manager: Account<'info, PoolManager>,
     pub pool: Account<'info, Pool>,
-    #[account(mut)]
+    #[account(
+        mut,
+        constraint = fee_account.key() == pool.token_a_fees || fee_account.key() == pool.token_b_fees
+    )]
     pub fee_account: Account<'info, TokenAccount>,
     #[account(mut)]
     pub beneficiary_account: Account<'info, TokenAccount>,
@@ -352,7 +368,7 @@ pub struct SendFeesToBeneficiary<'info> {
 
 #[derive(Accounts)]
 pub struct SetOperator<'info> {
-    #[account(mut)]
+    #[account(mut, has_one = admin @ ErrorCode::NotAdmin)]
     pub pool_manager: Account<'info, PoolManager>,
     pub admin: Signer<'info>,
     /// CHECK: Arbitrary account.
@@ -361,7 +377,7 @@ pub struct SetOperator<'info> {
 
 #[derive(Accounts)]
 pub struct SetBeneficiary<'info> {
-    #[account(mut)]
+    #[account(mut, has_one = admin @ ErrorCode::NotAdmin)]
     pub pool_manager: Account<'info, PoolManager>,
     pub admin: Signer<'info>,
     /// The account which will be able to receive all admin fees accrued by pools.
