@@ -337,11 +337,13 @@ pub struct SwapContext<'info> {
 #[derive(Accounts)]
 pub struct CommitNewAdmin<'info> {
     #[account(
+        address = pool.manager,
         has_one = admin @ ErrorCode::NotAdmin
     )]
     pub pool_manager: Account<'info, PoolManager>,
     #[account(mut)]
     pub swap: Account<'info, SwapInfo>,
+    #[account(has_one = swap)]
     pub pool: Account<'info, Pool>,
     pub admin: Signer<'info>,
     /// CHECK: Arbitrary.
@@ -354,7 +356,10 @@ pub struct SendFeesToBeneficiary<'info> {
     #[account(address = pool.manager)]
     pub pool_manager: Account<'info, PoolManager>,
     pub pool: Account<'info, Pool>,
-    #[account(mut)]
+    #[account(
+        mut,
+        constraint = fee_account.key() == pool.token_a_fees || fee_account.key() == pool.token_b_fees
+    )]
     pub fee_account: Account<'info, TokenAccount>,
     #[account(mut)]
     pub beneficiary_account: Account<'info, TokenAccount>,
