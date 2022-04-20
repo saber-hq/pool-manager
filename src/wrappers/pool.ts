@@ -2,11 +2,7 @@ import type { TransactionEnvelope } from "@saberhq/solana-contrib";
 import type { Fees, StableSwapState } from "@saberhq/stableswap-sdk";
 import { SWAP_PROGRAM_ID } from "@saberhq/stableswap-sdk";
 import { getOrCreateATAs, TOKEN_PROGRAM_ID, u64 } from "@saberhq/token-utils";
-import type {
-  Keypair,
-  PublicKey,
-  TransactionInstruction,
-} from "@solana/web3.js";
+import type { PublicKey, TransactionInstruction } from "@solana/web3.js";
 
 import type { PoolManagerSDK } from "../poolManagerSdk";
 import type { PoolData, PoolsProgram, SwapFees } from "../types";
@@ -70,11 +66,11 @@ export class PoolWrapper {
     return this.sdk.newTx([instruction]);
   }
 
-  commitNewAdmin(newAdmin: Keypair): TransactionEnvelope {
+  commitNewAdmin(newAdmin: PublicKey): TransactionEnvelope {
     const instruction = this.program.instruction.commitNewAdmin({
       accounts: {
         ...this._getCommonAccounts(),
-        newAdmin: newAdmin.publicKey,
+        newAdmin,
       },
     });
 

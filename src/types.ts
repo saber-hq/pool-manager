@@ -1,7 +1,7 @@
 import type { AnchorTypes } from "@saberhq/anchor-contrib";
 import type { TransactionEnvelope } from "@saberhq/solana-contrib";
 import type { u64 } from "@saberhq/token-utils";
-import type { Keypair, PublicKey, Signer } from "@solana/web3.js";
+import type { PublicKey, Signer } from "@solana/web3.js";
 
 import type { PoolsIDL } from "./idls/pools";
 import type { PoolManagerSDK } from "./poolManagerSdk";
@@ -35,7 +35,7 @@ export type PoolManagerWrapperCtorArgs = {
 
 export type StableSwapCtorArgs = {
   ampFactor: u64;
-  swapAccountSigner?: Keypair;
+  swapAccountSigner?: Signer;
   mintA: PublicKey;
   reserveA: PublicKey;
   mintB: PublicKey;

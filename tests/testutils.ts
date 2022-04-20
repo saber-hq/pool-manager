@@ -13,7 +13,7 @@ import {
   TOKEN_PROGRAM_ID,
   u64,
 } from "@saberhq/token-utils";
-import type { PublicKey } from "@solana/web3.js";
+import type { PublicKey, Signer } from "@solana/web3.js";
 import { Keypair } from "@solana/web3.js";
 import * as chai from "chai";
 
@@ -39,7 +39,7 @@ export const makePoolManagerSDK = (): PoolManagerSDK => {
 
 export const createPool = async (
   provider: Provider,
-  minter: Keypair,
+  minter: Signer,
   poolManagerWrapper: PoolManagerWrapper,
   initialAmpFactor: u64
 ): Promise<{
