@@ -11,7 +11,7 @@ import type {
 import mapValues from "lodash.mapvalues";
 
 import type { PoolsPrograms } from "./constants";
-import { POOLS_ADDRESSES } from "./constants";
+import { POOL_MANAGER_KEY, POOLS_ADDRESSES } from "./constants";
 import type {
   PendingPoolManagerWrapper,
   PoolManagerWrapperCtorArgs,
@@ -59,7 +59,9 @@ export class PoolManagerSDK {
   /**
    * loadManager
    */
-  async loadManager(key: PublicKey): Promise<PoolManagerWrapper> {
+  async loadManager(
+    key: PublicKey = POOL_MANAGER_KEY
+  ): Promise<PoolManagerWrapper> {
     return await PoolManagerWrapper.load(this, key);
   }
 

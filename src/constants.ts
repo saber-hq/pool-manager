@@ -23,3 +23,10 @@ export const MIN_RAMP_DURATION = 86_400;
 export const POOLS_CODERS = buildCoderMap<{
   Pools: PoolsTypes;
 }>(POOLS_IDLS, POOLS_ADDRESSES);
+
+/**
+ * Key for the Saber pool manager.
+ */
+export const POOL_MANAGER_KEY = new PublicKey(
+  "XD5s9eMuSibXzczBysd8VmG6nVe7DjqMQK1iZMQjANd"
+);
