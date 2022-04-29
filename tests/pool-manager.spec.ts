@@ -179,7 +179,7 @@ describe("Saber Pool Manager", () => {
     expect(await getSwapAdmin()).to.equal(poolWrapper.key.toString());
 
     const newAdmin = new Keypair();
-    const commitNewAdminTx = poolWrapper.commitNewAdmin(newAdmin);
+    const commitNewAdminTx = poolWrapper.commitNewAdmin(newAdmin.publicKey);
     await expectTX(commitNewAdminTx, "Commit new admin").to.be.fulfilled;
 
     const applyNewAdminTx = poolWrapper.applyNewAdmin();
