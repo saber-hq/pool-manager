@@ -3,9 +3,9 @@ import type { TransactionEnvelope } from "@saberhq/solana-contrib";
 import type { u64 } from "@saberhq/token-utils";
 import type { PublicKey, Signer } from "@solana/web3.js";
 
-import type { PoolsIDL } from "./idls/pools";
-import type { PoolManagerSDK } from "./poolManagerSdk";
-import type { PoolManagerWrapper } from "./wrappers/poolManager";
+import type { PoolsIDL } from "./idls/pools.js";
+import type { PoolManagerSDK } from "./poolManagerSdk.js";
+import type { PoolManagerWrapper } from "./wrappers/poolManager.js";
 
 export type PoolsTypes = AnchorTypes<
   PoolsIDL,

@@ -1,8 +1,8 @@
 import { buildCoderMap } from "@saberhq/anchor-contrib";
 import { PublicKey } from "@solana/web3.js";
 
-import { PoolsJSON } from "./idls/pools";
-import type { PoolsProgram, PoolsTypes } from "./types";
+import { PoolsJSON } from "./idls/pools.js";
+import type { PoolsProgram, PoolsTypes } from "./types.js";
 
 export interface PoolsPrograms {
   Pools: PoolsProgram;

@@ -4,8 +4,8 @@ import { SWAP_PROGRAM_ID } from "@saberhq/stableswap-sdk";
 import { getOrCreateATAs, TOKEN_PROGRAM_ID, u64 } from "@saberhq/token-utils";
 import type { PublicKey, TransactionInstruction } from "@solana/web3.js";
 
-import type { PoolManagerSDK } from "../poolManagerSdk";
-import type { PoolData, PoolsProgram, SwapFees } from "../types";
+import type { PoolManagerSDK } from "../poolManagerSdk.js";
+import type { PoolData, PoolsProgram, SwapFees } from "../types.js";
 
 /**
  * Wrapper class for Pool. Methods operate on the object's Pool and Swap.

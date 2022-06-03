@@ -1,4 +1,4 @@
-import * as anchor from "@project-serum/anchor";
+import * as anchor from "@project-serum/anchor/dist/esm/index.js";
 import { makeSaberProvider } from "@saberhq/anchor-contrib";
 import { chaiSolana, expectTX } from "@saberhq/chai-solana";
 import type { Provider } from "@saberhq/solana-contrib";
@@ -17,8 +17,8 @@ import type { PublicKey, Signer } from "@solana/web3.js";
 import { Keypair } from "@solana/web3.js";
 import * as chai from "chai";
 
-import { PoolManagerSDK } from "../src/poolManagerSdk";
-import type { PoolManagerWrapper } from "../src/wrappers/poolManager";
+import { PoolManagerSDK } from "../src/poolManagerSdk.js";
+import type { PoolManagerWrapper } from "../src/wrappers/poolManager.js";
 
 chai.use(chaiSolana);
 

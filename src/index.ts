@@ -1,5 +1,5 @@
-export * from "./constants";
-export * from "./pda";
-export { PoolManagerSDK } from "./poolManagerSdk";
-export * from "./types";
-export * from "./utils/comparePubkeys";
+export * from "./constants.js";
+export * from "./pda.js";
+export { PoolManagerSDK } from "./poolManagerSdk.js";
+export * from "./types.js";
+export * from "./utils/comparePubkeys.js";

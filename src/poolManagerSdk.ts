@@ -10,14 +10,14 @@ import type {
 } from "@solana/web3.js";
 import mapValues from "lodash.mapvalues";
 
-import type { PoolsPrograms } from "./constants";
-import { POOL_MANAGER_KEY, POOLS_ADDRESSES } from "./constants";
+import type { PoolsPrograms } from "./constants.js";
+import { POOL_MANAGER_KEY, POOLS_ADDRESSES } from "./constants.js";
 import type {
   PendingPoolManagerWrapper,
   PoolManagerWrapperCtorArgs,
-} from "./types";
-import getPrograms from "./utils/getPrograms";
-import { PoolManagerWrapper } from "./wrappers/poolManager";
+} from "./types.js";
+import getPrograms from "./utils/getPrograms.js";
+import { PoolManagerWrapper } from "./wrappers/poolManager.js";
 
 /**
  * Pool Manager SDK

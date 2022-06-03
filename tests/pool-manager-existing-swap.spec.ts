@@ -18,8 +18,8 @@ import type { PublicKey } from "@solana/web3.js";
 import { Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { expect } from "chai";
 
-import type { PoolManagerWrapper } from "../src/wrappers/poolManager";
-import { makePoolManagerSDK } from "./testutils";
+import type { PoolManagerWrapper } from "../src/wrappers/poolManager.js";
+import { makePoolManagerSDK } from "./testutils.js";
 
 describe("Saber Pool Manager with existing swap", () => {
   const sdk = makePoolManagerSDK();

@@ -1,6 +1,6 @@
 import type { PublicKey } from "@solana/web3.js";
 import zip from "lodash.zip";
-import invariant from "tiny-invariant";
+import { default as invariant } from "tiny-invariant";
 
 /**
  * Compares two pubkeys for sorting purposes.

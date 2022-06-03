@@ -1,9 +1,7 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "@saberhq/tsconfig/tsconfig.cjs.json",
   "compilerOptions": {
-    "module": "CommonJS",
-    "outDir": "dist/cjs/",
-    "noEmit": false
+    "outDir": "dist/cjs/"
   },
   "include": ["src/"]
 }

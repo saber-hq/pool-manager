@@ -18,13 +18,13 @@ import {
 } from "@saberhq/token-utils";
 import { Keypair, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import { expect } from "chai";
-import invariant from "tiny-invariant";
+import { default as invariant } from "tiny-invariant";
 
-import { MIN_RAMP_DURATION } from "../src/constants";
-import { findSaberPool, findSaberPoolManager } from "../src/pda";
-import { comparePubkeys } from "../src/utils/comparePubkeys";
-import type { PoolManagerWrapper } from "../src/wrappers/poolManager";
-import { createPool, makePoolManagerSDK } from "./testutils";
+import { MIN_RAMP_DURATION } from "../src/constants.js";
+import { findSaberPool, findSaberPoolManager } from "../src/pda.js";
+import { comparePubkeys } from "../src/utils/comparePubkeys.js";
+import type { PoolManagerWrapper } from "../src/wrappers/poolManager.js";
+import { createPool, makePoolManagerSDK } from "./testutils.js";
 
 describe("Saber Pool Manager", () => {
   const sdk = makePoolManagerSDK();

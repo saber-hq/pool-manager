@@ -23,10 +23,10 @@ import type {
   TransactionInstruction,
 } from "@solana/web3.js";
 import { Keypair, SystemProgram } from "@solana/web3.js";
-import invariant from "tiny-invariant";
+import { default as invariant } from "tiny-invariant";
 
-import { findSaberPool, findSaberPoolManager } from "../pda";
-import type { PoolManagerSDK } from "../poolManagerSdk";
+import { findSaberPool, findSaberPoolManager } from "../pda.js";
+import type { PoolManagerSDK } from "../poolManagerSdk.js";
 import type {
   PendingPool,
   PendingPoolManagerWrapper,
@@ -36,9 +36,9 @@ import type {
   PoolManagerWrapperCtorArgs,
   PoolsProgram,
   StableSwapCtorArgs,
-} from "../types";
-import { comparePubkeys } from "../utils/comparePubkeys";
-import { PoolWrapper } from "./pool";
+} from "../types.js";
+import { comparePubkeys } from "../utils/comparePubkeys.js";
+import { PoolWrapper } from "./pool.js";
 
 type TokenAccounts = {
   fees: PublicKey;
