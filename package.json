@@ -2,6 +2,12 @@
   "name": "@saberhq/pool-manager",
   "version": "0.1.15",
   "description": "Admin proxy for Saber pools.",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "keywords": [
