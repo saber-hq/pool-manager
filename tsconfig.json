@@ -1,7 +1,8 @@
 {
   "extends": "@saberhq/tsconfig/tsconfig.lib.json",
   "compilerOptions": {
-    "module": "CommonJS"
+    "module": "CommonJS",
+    "noEmit": true
   },
-  "include": ["./src", "./tests", "scripts/"]
+  "include": ["./src", "./tests", "scripts/", ".eslintrc.cjs"]
 }
