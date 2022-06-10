@@ -81,6 +81,7 @@
   "dependencies": {
     "lodash.mapvalues": "^4.6.0",
     "lodash.zip": "^4.2.0",
+    "superstruct": "^0.16.0",
     "tiny-invariant": "^1.2.0",
     "tslib": "^2.4.0"
   },
