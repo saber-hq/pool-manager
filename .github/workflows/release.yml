@@ -25,7 +25,7 @@ jobs:
           extra_nix_config: |
             experimental-features = nix-command flakes
       - name: Setup Cachix
-        uses: cachix/cachix-action@v10
+        uses: cachix/cachix-action@v12
         with:
           name: saber
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
@@ -69,7 +69,7 @@ jobs:
           extra_nix_config: |
             experimental-features = nix-command flakes
       - name: Setup Cachix
-        uses: cachix/cachix-action@v10
+        uses: cachix/cachix-action@v12
         with:
           name: saber
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
@@ -96,7 +96,7 @@ jobs:
           extra_nix_config: |
             experimental-features = nix-command flakes
       - name: Setup Cachix
-        uses: cachix/cachix-action@v10
+        uses: cachix/cachix-action@v12
         with:
           name: saber
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
@@ -124,7 +124,7 @@ jobs:
           extra_nix_config: |
             experimental-features = nix-command flakes
       - name: Setup Cachix
-        uses: cachix/cachix-action@v10
+        uses: cachix/cachix-action@v12
         with:
           name: saber
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
