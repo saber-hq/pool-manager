@@ -448,7 +448,7 @@ __metadata:
     "@types/lodash.mapvalues": ^4.6.7
     "@types/lodash.zip": ^4.2.7
     "@types/mocha": ^9.1.1
-    "@types/node": ^16.11.39
+    "@types/node": ^18.11.13
     "@yarnpkg/doctor": ^4.0.0-rc.6
     bn.js: ^5.2.1
     chai: =4.3.4
@@ -928,10 +928,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^16.11.39":
-  version: 16.11.39
-  resolution: "@types/node@npm:16.11.39"
-  checksum: bc97b9773ac6b3194800f990b349fad7f66c6126dacef59291b10a2c8b6813d6f67f947b7e12a6c9952790f7065d576fe38355b8fe034a6af60f317cfc570f69
+"@types/node@npm:^18.11.13":
+  version: 18.11.13
+  resolution: "@types/node@npm:18.11.13"
+  checksum: b0c1aa3bd2f5df8240e61096a49d6d4be600109b824d23408ec4ba1ec057dc0c60588e09f73b8a60455ad26d367e9c5562fad8403099f885cbc7b4cace83ec4c
   languageName: node
   linkType: hard
 
