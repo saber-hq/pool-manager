@@ -33,7 +33,7 @@ jobs:
         run: nix shell .#ci --command anchor-parse-idls
 
       - name: Setup Node
-        uses: actions/setup-node@v3.3.0
+        uses: actions/setup-node@v3.6.0
         with:
           always-auth: true
 
